@@ -1,0 +1,12 @@
+{
+    "extends": "jquery",
+    "rules": {
+        "import/extensions": [
+            "error",
+            "always",
+            {
+                "js": "ignorePackages"
+            }
+        ]
+    }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "goatlings-usability",
+  "version": "1.0.0",
+  "description": "Various tweaks to Goatlings.com",
+  "main": "goatlings-usability.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "userscript"
+  ],
+  "author": "SleebyKitty",
+  "license": "BSD-3-Clause",
+  "devDependencies": {
+    "@eslint/js": "^9.5.0",
+    "eslint": "^9.5.0",
+    "globals": "^15.6.0"
+  }
+}
