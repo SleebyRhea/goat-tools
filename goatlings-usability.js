@@ -248,7 +248,6 @@ class Mod {
     if (_u_img) this.user.prefix = getUri(_u_img.attr("src"))
 
     let d = $("div#user-info-points").text().replace(/[\s]+/g, ";").split(";")
-    this.user.mail = d[0] == "" ? 0 : parseSepInt(d[0])
     this.user.daimonds = parseSepInt(d[1])
     this.user.sugarstars = parseSepInt(d[2])
   }
@@ -475,7 +474,7 @@ Mod.add_mod("quickbar", async (m) => {
       ${new_event}
       <div class="user-info">
         <span>Welcome ${user_pfx_element}<a href="/profile/u/${m.user.uid}">${await m.user.name}</a></span>
-        <span class="sep"><a href="/mail/index/">${await m.user.mail} <img src="${IMAGES.mail}"></a></span>
+        <span class="sep"><a href="/mail/index/"><img src="${IMAGES.mail}"></a></span>
         <span class="sep"><a href="/cashshop">${await m.user.daimonds} <img src="${IMAGES.daimonds}"></a></span>
         <span class="sep"><a href="/bank">${await m.user.sugarstars} <img src="${IMAGES.sugarstars}"></a></span>
       </div>
