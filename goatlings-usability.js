@@ -12,7 +12,7 @@
 // @downloadURL https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/goatlings-usability.js
 // @updateURL   https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/goatlings-usability.js
 // @license     bsd-3-clause
-// @version     1.0.1
+// @version     1.0.2
 // ==/UserScript==
 
 /* eslint-env jquery */
@@ -466,7 +466,7 @@ Mod.add_mod("quickbar", async (m) => {
   }
 
   let user_login_or_register = ""
-  if (!m.user.csrf) user_login_or_register = `- Welcome (<u><a href="/login/">Login</a></u> or <u><a href="/register/">Register</a></u>)`
+  if (!await m.user.csrf) user_login_or_register = `- Welcome (<u><a href="/login/">Login</a></u> or <u><a href="/register/">Register</a></u>)`
 
   let glu_quickbar_obj =
     `<div id="glu-quickbar">
@@ -539,7 +539,7 @@ Mod.add_mod("quickbar", async (m) => {
   })
 
   Mod.add_mod("my-pets-header", async (m) => {
-    if (!m.user.csrf) return
+    if (! await m.user.csrf) return
     let header_css = css(`
       div#header > div#active_pet_image {
           right: 100px;
@@ -599,29 +599,29 @@ Mod.add_mod("quickbar", async (m) => {
       }
     `)
 
-    let active = (await m.user.fetch("goatlings"))[m.user.active]
-    let exp = active.experience.split("/")
-    let ratio = (exp[0] / exp[1]) * 100
-
-    let hp = active.hp.split("/")
-
-    let pet_stats =
-      `<div class="active_pet_stats">
-      <div class="stat-header">Level:  <span>${active.level}</span><br></div>
-      <b>Hp</b>:     <span class="${getStatClass(hp[0], hp[1])}">${active.hp}</span><br>
-      <b>Hunger</b>: <span class="${getStatClass(active.hunger)}">${active.hunger}/100</span><br>
-      <b>Mood</b>:   <span class="${getStatClass(active.mood)}">${active.mood}/100</span><br><hr>
-      <b>Wins</b>:   <span >${active.wins}</span><br>
-      <b>Loss</b>:   <span >${active.losses}</span><br>
-    </div>
-    <div class="active_exp_bar" style="background: linear-gradient(to right, pink ${ratio}%, white ${ratio}%)"></div>`
+    if (await m.user.active) {
+      let active = (await m.user.fetch("goatlings"))[await m.user.active]
+      let hp = active.hp.split("/")
+      let exp = active.experience.split("/")
+      let ratio = (exp[0] / exp[1]) * 100
+      $("div#header > div#active_pet_image > img")
+        .wrap(`<a href="/mypets"></a>`)
+        .parent()
+        .parent()
+        .after(`
+          <div class="active_pet_stats">
+            <div class="stat-header">Level:  <span>${active.level}</span><br></div>
+            <b>Hp</b>:     <span class="${getStatClass(hp[0], hp[1])}">${active.hp}</span><br>
+            <b>Hunger</b>: <span class="${getStatClass(active.hunger)}">${active.hunger}/100</span><br>
+            <b>Mood</b>:   <span class="${getStatClass(active.mood)}">${active.mood}/100</span><br><hr>
+            <b>Wins</b>:   <span >${active.wins}</span><br>
+            <b>Loss</b>:   <span >${active.losses}</span><br>
+          </div>
+          <div class="active_exp_bar" style="background: linear-gradient(to right, pink ${ratio}%, white ${ratio}%)"></div>`
+        )
+    }
 
     $("<style>").prop("type", "text/css").html(header_css).appendTo("head")
-    $("div#header > div#active_pet_image > img")
-      .wrap(`<a href="/mypets"></a>`)
-      .parent()
-      .parent()
-      .after(pet_stats)
   })
 }
 
