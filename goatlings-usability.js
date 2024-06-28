@@ -10,7 +10,7 @@
 // @grant       GM.getValue
 // @require     https://code.jquery.com/jquery-3.7.1.min.js
 // @license     bsd-3-clause
-// @version     1.0.0
+// @version     1.0.1
 // ==/UserScript==
 
 /* eslint-env jquery */
