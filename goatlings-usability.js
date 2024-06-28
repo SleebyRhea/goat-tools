@@ -12,7 +12,7 @@
 // @downloadURL https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/goatlings-usability.js
 // @updateURL   https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/goatlings-usability.js
 // @license     bsd-3-clause
-// @version     1.0.2
+// @version     1.0.3
 // ==/UserScript==
 
 /* eslint-env jquery */
