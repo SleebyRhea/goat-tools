@@ -354,7 +354,7 @@ Mod.add_mod("quickbar", async (m) => {
       width: 771px;
       float: right;
       background: linear-gradient(to bottom, #F56A91 23%, white 23%);
-    
+
       & b {
         color: #F56A91;
       }
@@ -406,6 +406,10 @@ Mod.add_mod("quickbar", async (m) => {
       & span.goattime {
         font-weight: bold;
         color: white;
+
+        & a:link, a:visited, a:hover, a:active {
+          color: white;
+        }
       }
 
       & div.user-info {
@@ -438,6 +442,12 @@ Mod.add_mod("quickbar", async (m) => {
         }
       }
     }
+
+    #glu-quickbar.loggedout {
+      background: #F56A91;
+      height: 1.2em;
+      & div, hr { display: none; }
+    }
   `)
 
   let user_pfx_element = ""
@@ -453,11 +463,14 @@ Mod.add_mod("quickbar", async (m) => {
     $("div#content > .event")[0].remove()
   }
 
+  let user_login_or_register = ""
+  if (!m.user.csrf) user_login_or_register = `- Welcome (<u><a href="/login/">Login</a></u> or <u><a href="/register/">Register</a></u>)`
+
   let glu_quickbar_obj =
     `<div id="glu-quickbar">
-      <span class="goattime">${goat_time}</span>
+      <span class="goattime">${goat_time}${user_login_or_register}</span>
+      
       ${new_event}
-
       <div class="user-info">
         <span>Welcome ${user_pfx_element}<a href="/profile/u/${m.user.uid}">${await m.user.name}</a></span>
         <span class="sep"><a href="/mail/index/">${await m.user.mail} <img src="${IMAGES.mail}"></a></span>
@@ -468,7 +481,6 @@ Mod.add_mod("quickbar", async (m) => {
       <hr>
 
       <div class="shoparea"><a href="/EventCalendar"><img title="Event Calendar" src="/images/shops/CommunityCenterEventCalendar.gif"></a><br><b>Calendar</b></div>
-      <!-- <div class="shoparea rsep"><a href="/Event_Info"><img title="Special Event Info" src="/images/shops/CommunityCenterEventInfo.gif"></a><br><b>Special Events</b></div> -->
       <div class="shoparea sep"><a href="/shops/view/10"><img title="General Foods" src="/images/shops/GeneralFoods.gif"></a><br><b>General Foods</b></div>
       <div class="shoparea"><a href="/shops/view/1"><img title="Toy Shop" src="/images/shops/ToyShop.gif"></a><br><b>Toy Shop</b></div>
 
@@ -490,7 +502,9 @@ Mod.add_mod("quickbar", async (m) => {
     </div>`
 
   $("<style>").prop("type", "text/css").html(glu_css_def).appendTo("head")
+
   $("#header").after(glu_quickbar_obj)
+  if (! await m.user.csrf) $("div#glu-quickbar").addClass("loggedout")
   $("#user-info-wrap, #user-info > br, #user-info, #user-info-points").remove()
 })
 
@@ -523,6 +537,7 @@ Mod.add_mod("quickbar", async (m) => {
   })
 
   Mod.add_mod("my-pets-header", async (m) => {
+    if (!m.user.csrf) return
     let header_css = css(`
       div#header > div#active_pet_image {
           right: 100px;
