@@ -9,26 +9,27 @@
 // @grant       GM.setValue
 // @grant       GM.getValue
 // @require     https://code.jquery.com/jquery-3.7.1.min.js
-// @downloadURL https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/goatlings-usability.js
+// @downloadURL https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/goatlingstools.user.js
 // @updateURL   https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/goatlings-usability.js
 // @license     bsd-3-clause
-// @version     1.0.3
+// @version     1.0.4
 // ==/UserScript==
 
 /* eslint-env jquery */
 /* globals jQuery, $, waitForKeyElements */
 
 // Unfortunately necessary, as the DD2.gif image does not contain transparency
-let __dd3_raw = "data:image/gif;base64, R0lGODlhFAAUAMZ6AP7//wDm9v79zf/8zLTy////zQLl9v/+zf/9/v/+0Lbx/wLl+ADl+P7+zP/+//78"
-  + "y//8/wPk9gLk9AHk9wHk9QPm97j0/7Pz//7//f/9zgLk+rjy///+y//9ygXj+rTy/QHn9///zAHm+f/8zwPl9QDk9//+/P7+/P//0/3/zgDl+gDn9QDm9bjw/f3//Pz/zrfx/P"
-  + "//zwPk+v///f7+/rHz/wDk+f7+//3+0v/8zbL1/gXk9QDn+QDm8gDm+Lfx/bfz+7jx/Lby/ATl+f79ywDm9ATi9//7zf7/z///zv780//+0v3+/7fz/gHj+QDn+7by+gDl97Pz/"
-  + "f//y7T0///7y//90vz9///9/7Px/v/7z7Xz/wDl9bL1+wHn9rXz/v//0f3/+gLj9bT0/v7/0f3/zf3//rX1/gDm8wPl8///+/79////+v7+yrXw/v/+z/78zADj87fy/wLi+7Ly"
-  + "/gDl/P/9zQPm+f/90P/+zv/////9zP///////////////yH/C05FVFNDQVBFMi4wAwEAAAAh/hFDcmVhdGVkIHdpdGggR0lNUAAh+QQJMgB/ACwAAAAAFAAUAEAH2oB/goOEhYJ"
-  + "3hAEtQCASBB8wOgoEFiUMdBsahIiDAXoIeiqGo6SDnIkwNSsuWBAALhJfXROlpXd3ELeDTqAYJgYKW1kMDg4zax6EFQRyZxQAn3oOJxglQlJuC5uHH3EnAABiGxG1hRTlhAS1p6P"
-  + "qo+yCFTZRXHdPEiILczxFIIUTCmQw0ePjB5UgTS6gQQCAAhRNgiKoCJDGwwoSMgyQGMKCAYMddbQNMkBAAYsbNNTQCKNHz4ILFgyMEjEmgoMrbEwAqNAigCFcnLwY0WNmhgGf6AT1"
-  + "AEArqdNAACH5BAkyAH8ALAEAAAATABIAQAfQgH+Cg4SFhQEtQCASBB8wOgoEFiUMdBsahoIBegh6KoJ3EHeDo5mmhAEwNSsuWBAALhJfXROEpaemTp0YJgYKW1kMDg4zax6DFQRyZx"
-  + "QAnHoOJxglQlJuC4MEoB9xJwAAYhsRuOSkouWZFTZRXHdPEiILczxFIIQTCjJMej4/VEFNLqBBAIACFEx/IqgIkMbDChIyDJAYwoIBgx11sAkyQEABixs01NAIo0fPggsWDBgSM"
-  + "SaCgytsTACo0CIALi9G9JiZYcDmn1umegCoRWpQIAA"
+let __dd3_raw = "data:image/gif;base64, R0lGODlhFAAUAMZ6AP7//wDm9v79zf/8zLTy////zQLl9v/+zf/9/v/+0Lbx/wLl+ADl+P7+zP/+//7"
+  + "8y//8/wPk9gLk9AHk9wHk9QPm97j0/7Pz//7//f/9zgLk+rjy///+y//9ygXj+rTy/QHn9///zAHm+f/8zwPl9QDk9//+/P7+/P//0/3/zgDl+gDn9"
+  + "QDm9bjw/f3//Pz/zrfx/P//zwPk+v///f7+/rHz/wDk+f7+//3+0v/8zbL1/gXk9QDn+QDm8gDm+Lfx/bfz+7jx/Lby/ATl+f79ywDm9ATi9//7zf7"
+  + "/z///zv780//+0v3+/7fz/gHj+QDn+7by+gDl97Pz/f//y7T0///7y//90vz9///9/7Px/v/7z7Xz/wDl9bL1+wHn9rXz/v//0f3/+gLj9bT0/v7/0"
+  + "f3/zf3//rX1/gDm8wPl8///+/79////+v7+yrXw/v/+z/78zADj87fy/wLi+7Ly/gDl/P/9zQPm+f/90P/+zv/////9zP///////////////yH/C05"
+  + "FVFNDQVBFMi4wAwEAAAAh/hFDcmVhdGVkIHdpdGggR0lNUAAh+QQJMgB/ACwAAAAAFAAUAEAH2oB/goOEhYJ3hAEtQCASBB8wOgoEFiUMdBsahIiDA"
+  + "XoIeiqGo6SDnIkwNSsuWBAALhJfXROlpXd3ELeDTqAYJgYKW1kMDg4zax6EFQRyZxQAn3oOJxglQlJuC5uHH3EnAABiGxG1hRTlhAS1p6Pqo+yCFTZ"
+  + "RXHdPEiILczxFIIUTCmQw0ePjB5UgTS6gQQCAAhRNgiKoCJDGwwoSMgyQGMKCAYMddbQNMkBAAYsbNNTQCKNHz4ILFgyMEjEmgoMrbEwAqNAigCFcn"
+  + "LwY0WNmhgGf6AT1AEArqdNAACH5BAkyAH8ALAEAAAATABIAQAfQgH+Cg4SFhQEtQCASBB8wOgoEFiUMdBsahoIBegh6KoJ3EHeDo5mmhAEwNSsuWBA"
+  + "ALhJfXROEpaemTp0YJgYKW1kMDg4zax6DFQRyZxQAnHoOJxglQlJuC4MEoB9xJwAAYhsRuOSkouWZFTZRXHdPEiILczxFIIQTCjJMej4/VEFNLqBBA"
+  + "IACFEx/IqgIkMbDChIyDJAYwoIBgx11sAkyQEABixs01NAIo0fPggsWDBgSMSaCgytsTACo0CIALi9G9JiZYcDmn1umegCoRWpQIAA"
 
 const UPDATE_WAIT_TIME = 60 * 60 * 1
 const PAGE = "https://www.goatlings.com"
@@ -118,7 +119,6 @@ class UserInfo {
       this.__fields[what] = data
       return data
     }
-
 
     return this.update(what)
   }
@@ -341,29 +341,31 @@ Mod.add_mod("update-pets", (m) => {
   .runsOn("/inventory/view_action")
 
 Mod.add_mod("quickbar", async (m) => {
-  let menu_clr = "#956E44"
-  let edge_clr = "#AF8A61"
-  let text_clr = "#F8F8C4"
+  let colors = {
+    "primary": "#F56A91",
+    "accent": "#FF80A4",
+    "background": "#FFFFFF",
+  }
 
   let glu_css_def = css(`
     #glu-quickbar {
       margin: 5px;
       padding: 5px;
       border-radius: 4px 4px 4px 4px;
-      border: 1px solid #F56A91;
+      border: 1px solid ${colors.primary};
       position: relative;
       width: 771px;
       float: right;
-      background: linear-gradient(to bottom, #F56A91 23%, white 23%);
+      background: linear-gradient(to bottom, ${colors.primary} 23%, ${colors.background} 23%);
 
       & b {
-        color: #F56A91;
+        color: ${colors.primary};
       }
     
       & hr {
         height: 1px;
         border: 0px;
-        background-color: #F56A91;
+        background-color: #${colors.primary};
       }
     
       & div.shoparea>a>img {
@@ -371,20 +373,20 @@ Mod.add_mod("quickbar", async (m) => {
       }
     
       & div.sep {
-        border-left: 1px solid #F56A91;
+        border-left: 1px solid ${colors.primary};
         padding-left: 15px;
       }
     
       & div.rsep {
-        border-right: 1px solid #F56A91;
+        border-right: 1px solid ${colors.primary};
         padding-right: 15px;
       }
     
       & span.newevent {
-        border-left: 1px solid white;
+        border-left: 1px solid ${colors.background};
         padding-left: 5px;
         & a:link, a:visited, a:hover, a:active {
-          color: white;
+          color: ${colors.background};
         }
       }
 
@@ -396,20 +398,20 @@ Mod.add_mod("quickbar", async (m) => {
         line-height: 1.1;
 
         & a:link, a:visited {
-          color: #F56A91;
+          color: ${colors.primary};
         }
 
         & a:hover, a:active {
-          color: #FF80A4;
+          color: ${colors.accent};
         }
       }
 
       & span.goattime {
         font-weight: bold;
-        color: white;
+        color: ${colors.background};
 
         & a:link, a:visited, a:hover, a:active {
-          color: white;
+          color: ${colors.background};
         }
       }
 
@@ -418,7 +420,7 @@ Mod.add_mod("quickbar", async (m) => {
         float: right;
         position: absolute;
         font-weight: bold;
-        color: white;
+        color: ${colors.background};
     
         margin: 5px;
         top: 0;
@@ -429,23 +431,23 @@ Mod.add_mod("quickbar", async (m) => {
         }
 
         & .sep {
-          border-left: 1px solid white;
+          border-left: 1px solid ${colors.background};
           padding-left: 5px;
         }
       
         & .rsep {
-          border-right: 1px solid white;
+          border-right: 1px solid ${colors.background};
           padding-right: 5px;
         }
 
         & a:link, a:visited, a:hover, a:active {
-          color: white;
+          color: ${colors.background};
         }
       }
     }
 
     #glu-quickbar.loggedout {
-      background: #F56A91;
+      background: ${colors.primary};
       height: 1.2em;
       & div, hr { display: none; }
     }
@@ -536,6 +538,15 @@ Mod.add_mod("quickbar", async (m) => {
 
     $("<style>").prop("type", "text/css").html(content_css).appendTo("head")
   })
+
+  Mod.add_mod("battle", async (m) => {
+    const battle_css = css(`
+      #content > center > div.battle-grid {
+        padding: 0;
+      }
+    `)
+    $("<style>").prop("type", "text/css").html(battle_css).appendTo("head")
+  }).runsOn("/battle/challengers")
 
   Mod.add_mod("my-pets-header", async (m) => {
     if (! await m.user.csrf) return
