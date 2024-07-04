@@ -830,16 +830,16 @@ Mod.create("petHeader", (mod) => {
       .parent()
       .parent()
       .after(`
-          <div class="active_pet_stats">
-            <div class="stat-header">Level:  <span>${active.level}</span><br></div>
-            <b>Hp</b>:     <span class="${getStatClass(active.current_hp, active.max_hp)}">${hp}</span><br>
-            <b>Hunger</b>: <span class="${getStatClass(active.hunger)}">${active.hunger}/100</span><br>
-            <b>Mood</b>:   <span class="${getStatClass(active.mood)}">${active.mood}/100</span><br><hr>
-            <b>Wins</b>:   <span >${active.wins}</span><br>
-            <b>Loss</b>:   <span >${active.losses}</span><br>
-          </div>
-          <div class="active_exp_bar" style="background: linear-gradient(to right, ${Style.get("accent")} ${ratio}%, ${Style.get("background")} ${ratio}%)"></div>`
-      )
+        <div class="active_pet_stats">
+          <div class="stat-header">Level:  <span>${active.level}</span><br></div>
+          <b>Hp</b>:     <span class="${getStatClass(active.current_hp, active.max_hp)}">${hp}</span><br>
+          <b>Hunger</b>: <span class="${getStatClass(active.hunger)}">${active.hunger}/100</span><br>
+          <b>Mood</b>:   <span class="${getStatClass(active.mood)}">${active.mood}/100</span><br><hr>
+          <b>Wins</b>:   <span >${active.wins}</span><br>
+          <b>Loss</b>:   <span >${active.losses}</span><br>
+        </div>
+        <div class="active_exp_bar" style="background: linear-gradient(to right, ${Style.get("accent")} ${ratio}%, ${Style.get("background")} ${ratio}%)"></div>
+      `)
     return true
   }
 })
