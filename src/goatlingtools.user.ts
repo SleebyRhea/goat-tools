@@ -217,6 +217,31 @@ class Style {
   static set accent(color: string) { this.settings.accent = color }
 }
 
+class Settings {
+  private static settings: { [key: string]: string | boolean } = {
+    itemsStacked: false,
+  }
+
+  static get(property: string) {
+    return this.settings[property] ?? false
+  }
+
+  static set(property: string, what: string | boolean) {
+    this.settings[property] = what
+    localStorage.setItem("gt_settings", JSON.stringify(this.settings))
+  }
+
+  static load(defaultSet: { [key: string]: string | boolean } = {}) {
+    const loadedSettings = JSON.parse(localStorage.getItem(`gt_settings`) ?? "{}")
+    const wantedSettings = { ...defaultSet, ...loadedSettings }
+
+    for (const key in wantedSettings) {
+      this.settings[key] = wantedSettings[key] ?? this.settings[key]
+    }
+
+    localStorage.setItem("gt_settings", JSON.stringify(this.settings))
+  }
+}
 
 /**
  * 
