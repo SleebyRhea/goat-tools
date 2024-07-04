@@ -410,13 +410,15 @@ class User extends Logger {
   }
 }
 
-
+/**
+ * Represents a mod that this userscript is injecting
+ */
 class Mod extends Logger {
   private static __all: Mod[] = []
   static user: User | null = null
 
   name: string = ""
-  runsOn: string[] = []
+  runsOn: (string | RegExp)[] = []
   enabled: boolean
   onActivate: (self: Mod) => Promise<boolean>
   onPreload: (self: Mod) => any
@@ -434,10 +436,25 @@ class Mod extends Logger {
   async activate() {
     if (!this.enabled) return this.logDebug("Not enabled, skipping")
 
+    const pageUri = getUri()
+
     if (this.runsOn.length > 0) {
-      if (this.runsOn.indexOf(getUri()) < 0
-        && this.runsOn.indexOf(getUri() + "/") < 0
-      ) return this.logDebug("Can't run on this page")
+      let canRun = false
+      for (const uri of this.runsOn) {
+        if (uri instanceof RegExp) {
+          if (!uri.test(pageUri)) continue
+          canRun = true
+          break
+        }
+
+        if (typeof uri === "string") {
+          if (!pageUri.startsWith(uri)) continue
+          canRun = true
+          break
+        }
+      }
+
+      if (!canRun) return this.logDebug("Can't run on this page")
     }
 
     if (!await this.onActivate(this)) this.logDebug("Didn't activate")
@@ -460,13 +477,29 @@ class Mod extends Logger {
     init(m)
     this.__all.push(m)
 
+    let canRun = true
     if (m.runsOn.length > 0) {
-      if (m.runsOn.indexOf(getUri()) < 0
-        && m.runsOn.indexOf(getUri() + "/") < 0
-      ) return m
+      canRun = false
+      const pageUri = getUri()
+      for (const uri of m.runsOn) {
+        if (uri instanceof RegExp) {
+          if (!uri.test(pageUri)) continue
+          canRun = true
+          break
+        }
+
+        if (typeof uri === "string") {
+          if (!pageUri.startsWith(uri)) continue
+          canRun = true
+          break
+        }
+      }
     }
 
-    m.onPreload(m)
+    if (canRun) {
+      m.logDebug("Running onPreload hook ...")
+      m.onPreload(m)
+    }
 
     return m
   }
@@ -482,24 +515,35 @@ class Mod extends Logger {
 }
 
 Style.add(/*css*/`
-  /* Alters main content margins, and adds a border to better fit with the changes */
-  /* added by quickbar and sidebar mods */
-  div#wrapper {
-    background: none;
+  .gt-header {
+    background: %CLR_PRIMARY;
+    color: %CLR_BACKGROUND;
+    float: right;
+    width: 772px;
+    margin-left: 5;
+    margin-right: 5;
+    margin-bottom: 0;
+    padding: 5px;
+    font-weight: bold;
+    border-radius: 4px 4px 0px 0px;
+    display: flex;
+    
+    & hr {
+      width: 1;
+      border-left: 1px solid %CLR_BACKGROUND;
+      height: 100%;
+    }
+    
+    & .header-option:hover {
+      cursor: pointer;
+    }
 
-    & div#content {
-      border: 1px solid %CLR_PRIMARY;
-      
-      width: 760px;
-      float: right;
+    & .selected {
+      text-decoration: underline;
     }
   }
-
-  /* Adjust the battle page content to fit better inline*/
-  #content > center > div.battle-grid {
-    padding: 0;
-  }
 `)
+
 
 // Shows the lowest haggle-able price for a shop object
 Mod.create("hagglePrice", (mod) => {
@@ -888,10 +932,7 @@ Mod.create("settingsPage", (mod) => {
 
   mod.onPreload = () => {
     Style.add(/*css*/`
-      #content.gt-settings-container {
-        border-radius: 0px 0px 4px 4px;
-        margin-top: 0;
-  
+      #content.gt-settings-container {  
         & .hidden {
           display: none;
         }
@@ -942,34 +983,6 @@ Mod.create("settingsPage", (mod) => {
           }
         }
       }
-  
-      .gt-settings-header {
-        background: %CLR_PRIMARY;
-        color: %CLR_BACKGROUND;
-        float: right;
-        width: 772px;
-        margin-left: 5;
-        margin-right: 5;
-        margin-bottom: 0;
-        padding: 5px;
-        font-weight: bold;
-        border-radius: 4px 4px 0px 0px;
-        display: flex;
-        
-        & hr {
-          width: 1;
-          border-left: 1px solid %CLR_BACKGROUND;
-          height: 100%;
-        }
-        
-        & .header-option:hover {
-          cursor: pointer;
-        }
-
-        & .selected {
-          text-decoration: underline;
-        }
-      }
     `)
   }
 
@@ -997,14 +1010,14 @@ Mod.create("settingsPage", (mod) => {
     const root = $("div#content")
 
     root.before(/*html*/`
-      <div class="gt-settings-header">
+      <div class="gt-header">
         <div id="my-settings-select" class="header-option selected">My Settings</div>
         &nbsp|&nbsp
         <div id="gttools-select" class="header-option">Goatling Tools</div>
       </div>
     `)
 
-    $(".gt-settings-header").after(`<div id="content" class="gt-settings-container"></div>`)
+    $(".gt-header").after(`<div id="content" class="gt-settings-container gt-has-header"></div>`)
 
     root.addClass("gt-settings")
       .find("h2")[0]
@@ -1092,11 +1105,259 @@ Mod.create("settingsPage", (mod) => {
   }
 })
 
+Mod.create("inventoryTools", (mod) => {
+  mod.runsOn = ["/inventory"]
+
+  mod.onPreload = () => {
+    Style.add(`
+      div.gt-header {
+        justify-content: space-evenly;
+        & img {
+          margin: 0;
+          width: 14;
+        }
+        & a, a:link, a:visited, a:active {
+          color: %CLR_BACKGROUND;
+        }
+        & a:hover {
+          color: %CLR_ACCENT;
+        }
+      }
+
+      div#content {
+        text-align: center;
+      }
+
+      center > .item-invent {
+        border: 1px dotted;
+        border-color: %CLR_PRIMARY;
+        border-radius: 4px;
+        height: 95px;
+        width: 95px;
+        position: relative;
+
+        & img {
+          height: 70%;
+        }
+
+        & span.item-count {
+          position: absolute;
+          top: 0;
+          right: 0;
+          margin: 5;
+          font-size: 14;
+        }
+
+        & div.item-name {
+          border-radius: 0 0 4px 4px;
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          padding: 3 0 3 0;
+          margin: 0;
+          background: %CLR_PRIMARY;
+          color: %CLR_BACKGROUND;
+        }
+
+        & a, a:link, a:visited, a:hover, a:active {
+          color: %CLR_PRIMARY;
+        }
+      }
+    `)
+  }
+
+  const COUNT_RE = new RegExp("Total Items: ([0-9]+)$")
+
+  const idToRegexp: { [key: string]: RegExp } = {
+    "all-items": new RegExp("^/inventory(?:/index/[0-9]+)?/?$"),
+    "food-items": new RegExp("/food/?$"),
+    "toy-items": new RegExp("/toy/?$"),
+    "wearable-items": new RegExp("/wearable/?$"),
+    "atk-items": new RegExp("/battle_item_att/?$"),
+    "def-items": new RegExp("/battle_item_def/?$"),
+    "dodge-items": new RegExp("/speed_inc/?$"),
+    "collect-items": new RegExp("/collectible/?$"),
+    "container-items": new RegExp("/container/?$"),
+    "book-items": new RegExp("/intel_inc/?$"),
+    "icon-items": new RegExp("/usericon/?$"),
+    "doll-items": new RegExp("/pet_look/?$"),
+    "potion-items": new RegExp("/health_potion/?$"),
+    "retired-items": new RegExp("/retired/?$"),
+  }
+
+
+  mod.onActivate = async () => {
+    const root = $("div#content")
+    const s = Settings.get("itemsStacked") ? 2 : 1
+
+    root.before(/*html*/`
+      <div class="gt-header">
+        <div id="all-items" class="header-option">
+          <a href="/inventory/index/${s}">All</a>
+        </div>
+
+        &nbsp|&nbsp
+        <div id="food-items" class="header-option">
+          <a href="/inventory/index/${s}/food">Food</a>
+        </div>
+
+        &nbsp|&nbsp
+        <div id="toy-items" class="header-option">
+          <a href="/inventory/index/${s}/toy">Toys</a>
+        </div>
+
+        &nbsp|&nbsp
+        <div id="wearable-items" class="header-option">
+          <a href="/inventory/index/${s}/wearable">Wearables</a>
+        </div>
+
+        &nbsp|&nbsp
+        <div id="atk-items" class="header-option">
+          <a href="/inventory/index/${s}/battle_item_att">Attacking</a>
+        </div>
+
+        &nbsp|&nbsp
+        <div id="def-items" class="header-option">
+          <a href="/inventory/index/${s}/battle_item_def">Defending</a>
+        </div>
+
+        &nbsp|&nbsp
+        <div id="dodge-items" class="header-option">
+          <a href="/inventory/index/${s}/speed_inc">Dodging</a>
+        </div>
+
+        &nbsp|&nbsp
+        <div id="collect-items" class="header-option">
+          <a href="/inventory/index/${s}/collectible">Collectibles</a>
+        </div>
+
+        &nbsp|&nbsp
+        <div id="container-items" class="header-option">
+          <a href="/inventory/index/${s}/container">Containers</a>
+        </div>
+
+        &nbsp|&nbsp
+        <div id="book-items" class="header-option">
+          <a href="/inventory/index/${s}/intel_inc">Books</a>
+        </div>
+        
+        &nbsp|&nbsp
+        <div id="icon-items" class="header-option">
+          <a href="/inventory/index/${s}/usericon">Icons</a>
+        </div>
+        
+        &nbsp|&nbsp
+        <div id="doll-items" class="header-option">
+          <a href="/inventory/index/${s}/pet_look">Dolls</a>
+        </div>
+        
+        &nbsp|&nbsp
+        <div id="potion-items" class="header-option">
+          <a href="/inventory/index/${s}/health_potion">Potions</a>
+        </div>
+        
+        &nbsp|&nbsp
+        <div id="retired-items" class="header-option">
+          <a href="/inventory/index/${s}/retired">Retired</a>
+        </div>
+        
+        &nbsp|&nbsp
+        <div class="header-option">
+          <img id="toggle-stack" src="${Settings.get("itemsStacked") ? RES.image.stacked : RES.image.unstacked}">
+        </div>
+      </div>
+    `)
+
+    root.addClass('gt-has-header')
+    root.find("h2")[0].remove()
+    root.find("p").slice(0, 2).remove()
+
+    const uri = getUri()
+
+    for (const id in idToRegexp) {
+      if (idToRegexp[id].test(uri)) {
+        $("div.gt-header > div#" + id).addClass("selected")
+      }
+    }
+
+    $("center > div.item-invent").each((_, item) => {
+      let text = $(item).text()
+      const link = $(item).find("a")[0].href
+      const imag = $(item).find("img")[0].src
+      const count = parseSepInt(COUNT_RE.exec(text)?.[1] ?? "1")
+      text = text.replace(COUNT_RE, "")
+
+      let countElement = ""
+      if (count > 1) countElement = `<span class="item-count">x${count}</span>`
+
+      $("div#content > center").append(`
+        <div class="item-invent">
+          <a href="${getUri(link)}">
+            <img src="${getUri(imag)}">
+            ${countElement}
+          </a>
+          <div class="item-name">${text}</div>
+        </div>
+      `)
+
+      $(item).remove()
+    })
+
+    $("div.header-option > img#toggle-stack").on("click", () => {
+      Settings.set("itemsStacked", Settings.get("itemsStacked") ? false : true)
+      const trailing = /^\/inventory\/index\/[0-9](.+)$/.exec(uri)?.[1]
+
+      console.log("Toggling stacks!")
+      if (trailing) {
+        mod.logDebug(`/inventory/index/${Settings.get("itemsStacked") ? 2 : 1}${trailing}`)
+        window.location.href = `/inventory/index/${Settings.get("itemsStacked") ? 2 : 1}${trailing}`
+        return
+      }
+
+      mod.logDebug(`/inventory/index/${Settings.get("itemsStacked") ? 2 : 1}`)
+      window.location.href = `/inventory/index/${Settings.get("itemsStacked") ? 2 : 1}`
+    })
+
+    return true
+  }
+})
+
+Style.add(/*css*/`
+  /* Alters main content margins, and adds a border to better fit with the changes */
+  /* added by quickbar and sidebar mods */
+  div#wrapper {
+    background: none;
+
+    & div#content {
+      border: 1px solid %CLR_PRIMARY;
+      
+      width: 760px;
+      float: right;
+    }
+  }
+
+  /* Adjust the battle page content to fit better inline*/
+  #content > center > div.battle-grid {
+    padding: 0;
+  }
+
+  div#content.gt-has-header {
+    border-radius: 0px 0px 4px 4px;
+    margin-top: 0;
+  }
+`)
+
+Style.load({
+  background: "#FFFFFF",
+  primary: "#F56A91",
+  accent: "#FF80A4",
+})
+
+Style.inject()
+
 $(async () => {
-  Style.load({
-    background: "#FFFFFF",
-    primary: "#F56A91",
-    accent: "#FF80A4",
+  Settings.load({
+    "itemsStacked": false
   })
 
   // Pull the page CSRF from the logout section of the sidebar
@@ -1141,7 +1402,6 @@ $(async () => {
     setInterval(() => { user.doUpdate() }, User.UPDATE_WAIT_TIME * 1_000)
   }
 
-  Style.inject()
   Script.inject()
   Mod.activateAll()
 })

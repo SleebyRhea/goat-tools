@@ -116,6 +116,16 @@ RES.image.save = "data:image/gif;base64, R0lGODdhFAAUAHcAACH/C05FVFNDQVBFMi4wAwE
     + "NpzPrUMPJ2MFK76iYclsLomdj3RKha6q2Fg0i/0hvuBwWOtBOM+EtFfMJhQI3jMz7aZH2WF3Yf++y+d8BDJ4YnU/XFMEWh0SjY6PKQARACH5BAUKAA"
     + "AALAAAAAAUABQAgwAAACIgNB5QPDeUbltu4WOb/4+Pj8DAwP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAARqUEhzqr1GgA3EGNRVBcFhDNrmgeJYnqj6"
     + "hSJpfulKXzacz61DDydjBSu+omHJbC6JnY90SoWuqthYNDsleH+IsHgcJhQIYGfTa2ZHyWRzYX5+q9d0ggwOb6fva1oefHyCXFgpHRKLjI2JEQA7";
+RES.image.stacked = "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAANlJREFUSIl"
+    + "jZEACaZaG/xmoBGYdP8/IwMDAwIJu+OMPn6llBwOKBciGb7uyniJDGZl1GbFawMDAwNCyqInh3LnLZBtubBrFiMzHsMDISJdswxkYGBj+/738H68Pv"
+    + "HQCGVoWNZFtAboP4BxqR/L263cYUSxAtoQaAJZMMXxATcNRLPDUVKGKBbICvCiWoATR/7+XKbLESycQbglWCxgYGBjOnl5GkSU1cXUoFqAkU0p9gA2"
+    + "gWMDIrMtIiQ9q4uowxGgeySzoEtQAWJMpA8NofYAAo/UBXjD86gMAmXlwBoegD/UAAAAASUVORK5CYII=";
+RES.image.unstacked = "data:image/gif;base64, iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAUpJREFUS"
+    + "IntlT1ug0AQhWdtt0hcgC5NJCigQ/IFQscFXOIuh7Dc5QR2SZHWnXOBSC4srwsspUnHBZCoo0310ODsxPwocpOvWRh239vZn4Hon3ujsjg0ZVXT28e"
+    + "n4h+eHh+M5zq0PZyVNBhkcWhs8e3hrGZ4MV+FUdNAoe06Q4iXVd2Ke65DWRyaCQ+ejq+Gt12B+P6yo3W+asUm4qieQBhGYGbr3AVp3a8ZZICDATzXE"
+    + "fv2XiKIY733lx2VVU2b55fxBlxc64KiKKDlfNGYLOeL4QY2cTUN1OY9p8RPxUw6GUjivI/WhTWTmwZc3AaWCMAEG3/TgItLs5cyIWK1COlLp2EIZVW"
+    + "37wHEr+vKUDzX+XnReF0ZQ+KnRCTc5HW+Iq2LweJRFDTPVgPeYSyNQeKnzdFK/LRVHfvCJ6j4DwMGf7LJvCL+Vh378g38zcYi1It/3wAAAABJRU5Er"
+    + "kJggg==";
 var PAGE = "https://www.goatlings.com";
 /**
  * Return the URI portion of a page url
@@ -254,6 +264,32 @@ var Style = /** @class */ (function () {
         accent: "grey",
     };
     return Style;
+}());
+var Settings = /** @class */ (function () {
+    function Settings() {
+    }
+    Settings.get = function (property) {
+        var _a;
+        return (_a = this.settings[property]) !== null && _a !== void 0 ? _a : false;
+    };
+    Settings.set = function (property, what) {
+        this.settings[property] = what;
+        localStorage.setItem("gt_settings", JSON.stringify(this.settings));
+    };
+    Settings.load = function (defaultSet) {
+        var _a, _c;
+        if (defaultSet === void 0) { defaultSet = {}; }
+        var loadedSettings = JSON.parse((_a = localStorage.getItem("gt_settings")) !== null && _a !== void 0 ? _a : "{}");
+        var wantedSettings = __assign(__assign({}, defaultSet), loadedSettings);
+        for (var key in wantedSettings) {
+            this.settings[key] = (_c = wantedSettings[key]) !== null && _c !== void 0 ? _c : this.settings[key];
+        }
+        localStorage.setItem("gt_settings", JSON.stringify(this.settings));
+    };
+    Settings.settings = {
+        itemsStacked: false,
+    };
+    return Settings;
 }());
 /**
  *
@@ -424,6 +460,9 @@ var User = /** @class */ (function (_super) {
     User.UPDATE_WAIT_TIME = 60 * 60 * 1;
     return User;
 }(Logger));
+/**
+ * Represents a mod that this userscript is injecting
+ */
 var Mod = /** @class */ (function (_super) {
     __extends(Mod, _super);
     function Mod(name) {
@@ -445,19 +484,36 @@ var Mod = /** @class */ (function (_super) {
     });
     Mod.prototype.activate = function () {
         return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
+            var pageUri, canRun, _i, _a, uri;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
                     case 0:
                         if (!this.enabled)
                             return [2 /*return*/, this.logDebug("Not enabled, skipping")];
+                        pageUri = getUri();
                         if (this.runsOn.length > 0) {
-                            if (this.runsOn.indexOf(getUri()) < 0
-                                && this.runsOn.indexOf(getUri() + "/") < 0)
+                            canRun = false;
+                            for (_i = 0, _a = this.runsOn; _i < _a.length; _i++) {
+                                uri = _a[_i];
+                                if (uri instanceof RegExp) {
+                                    if (!uri.test(pageUri))
+                                        continue;
+                                    canRun = true;
+                                    break;
+                                }
+                                if (typeof uri === "string") {
+                                    if (!pageUri.startsWith(uri))
+                                        continue;
+                                    canRun = true;
+                                    break;
+                                }
+                            }
+                            if (!canRun)
                                 return [2 /*return*/, this.logDebug("Can't run on this page")];
                         }
                         return [4 /*yield*/, this.onActivate(this)];
                     case 1:
-                        if (!(_a.sent()))
+                        if (!(_c.sent()))
                             this.logDebug("Didn't activate");
                         return [2 /*return*/];
                 }
@@ -482,12 +538,30 @@ var Mod = /** @class */ (function (_super) {
         var m = new Mod(name);
         init(m);
         this.__all.push(m);
+        var canRun = true;
         if (m.runsOn.length > 0) {
-            if (m.runsOn.indexOf(getUri()) < 0
-                && m.runsOn.indexOf(getUri() + "/") < 0)
-                return m;
+            canRun = false;
+            var pageUri = getUri();
+            for (var _i = 0, _a = m.runsOn; _i < _a.length; _i++) {
+                var uri = _a[_i];
+                if (uri instanceof RegExp) {
+                    if (!uri.test(pageUri))
+                        continue;
+                    canRun = true;
+                    break;
+                }
+                if (typeof uri === "string") {
+                    if (!pageUri.startsWith(uri))
+                        continue;
+                    canRun = true;
+                    break;
+                }
+            }
         }
-        m.onPreload(m);
+        if (canRun) {
+            m.logDebug("Running onPreload hook ...");
+            m.onPreload(m);
+        }
         return m;
     };
     /**
@@ -502,7 +576,7 @@ var Mod = /** @class */ (function (_super) {
     Mod.user = null;
     return Mod;
 }(Logger));
-Style.add(/*css*/ "\n  /* Alters main content margins, and adds a border to better fit with the changes */\n  /* added by quickbar and sidebar mods */\n  div#wrapper {\n    background: none;\n\n    & div#content {\n      border: 1px solid %CLR_PRIMARY;\n      \n      width: 760px;\n      float: right;\n    }\n  }\n\n  /* Adjust the battle page content to fit better inline*/\n  #content > center > div.battle-grid {\n    padding: 0;\n  }\n");
+Style.add(/*css*/ "\n  .gt-header {\n    background: %CLR_PRIMARY;\n    color: %CLR_BACKGROUND;\n    float: right;\n    width: 772px;\n    margin-left: 5;\n    margin-right: 5;\n    margin-bottom: 0;\n    padding: 5px;\n    font-weight: bold;\n    border-radius: 4px 4px 0px 0px;\n    display: flex;\n    \n    & hr {\n      width: 1;\n      border-left: 1px solid %CLR_BACKGROUND;\n      height: 100%;\n    }\n    \n    & .header-option:hover {\n      cursor: pointer;\n    }\n\n    & .selected {\n      text-decoration: underline;\n    }\n  }\n");
 // Shows the lowest haggle-able price for a shop object
 Mod.create("hagglePrice", function (mod) {
     mod.runsOn = ["/shops/viewa"];
@@ -631,7 +705,7 @@ Mod.create("petHeader", function (mod) {
                         .wrap("<a href=\"/mypets\"></a>")
                         .parent()
                         .parent()
-                        .after("\n          <div class=\"active_pet_stats\">\n            <div class=\"stat-header\">Level:  <span>".concat(active.level, "</span><br></div>\n            <b>Hp</b>:     <span class=\"").concat(getStatClass(active.current_hp, active.max_hp), "\">").concat(hp, "</span><br>\n            <b>Hunger</b>: <span class=\"").concat(getStatClass(active.hunger), "\">").concat(active.hunger, "/100</span><br>\n            <b>Mood</b>:   <span class=\"").concat(getStatClass(active.mood), "\">").concat(active.mood, "/100</span><br><hr>\n            <b>Wins</b>:   <span >").concat(active.wins, "</span><br>\n            <b>Loss</b>:   <span >").concat(active.losses, "</span><br>\n          </div>\n          <div class=\"active_exp_bar\" style=\"background: linear-gradient(to right, ").concat(Style.get("accent"), " ").concat(ratio, "%, ").concat(Style.get("background"), " ").concat(ratio, "%)\"></div>"));
+                        .after("\n        <div class=\"active_pet_stats\">\n          <div class=\"stat-header\">Level:  <span>".concat(active.level, "</span><br></div>\n          <b>Hp</b>:     <span class=\"").concat(getStatClass(active.current_hp, active.max_hp), "\">").concat(hp, "</span><br>\n          <b>Hunger</b>: <span class=\"").concat(getStatClass(active.hunger), "\">").concat(active.hunger, "/100</span><br>\n          <b>Mood</b>:   <span class=\"").concat(getStatClass(active.mood), "\">").concat(active.mood, "/100</span><br><hr>\n          <b>Wins</b>:   <span >").concat(active.wins, "</span><br>\n          <b>Loss</b>:   <span >").concat(active.losses, "</span><br>\n        </div>\n        <div class=\"active_exp_bar\" style=\"background: linear-gradient(to right, ").concat(Style.get("accent"), " ").concat(ratio, "%, ").concat(Style.get("background"), " ").concat(ratio, "%)\"></div>\n      "));
                     return [2 /*return*/, true];
             }
         });
@@ -680,7 +754,7 @@ Mod.create("settingsPage", function (mod) {
     mod.runsOn = ["/settings"];
     mod.enabled = true;
     mod.onPreload = function () {
-        Style.add(/*css*/ "\n      #content.gt-settings-container {\n        border-radius: 0px 0px 4px 4px;\n        margin-top: 0;\n  \n        & .hidden {\n          display: none;\n        }\n  \n        & .gt-settings > span {\n          float: right;\n        }\n  \n        & #gt-tools-settings {\n          & input.submit {\n            position: absolute;\n            right: 0;\n            margin: 5;\n            top: -27;\n          }\n\n          & table {\n            border-collapse: separate;\n            display: inline-block;\n          }\n\n          & table#gt-style-settings {\n            float: left;\n          }\n\n          & table#gt-mods-enabled {\n            float: right;\n          }\n  \n          & table > tbody > tr > td:nth-child(1) {\n            padding: 5px;\n            border-radius: 4px 0px 0px 4px;\n          }\n  \n          & table > tbody > tr > td:nth-last-child(1) {\n            padding: 5px;\n            border-radius: 0px 4px 4px 0px;\n          }\n  \n          & table {\n            border-collapse: separate;\n            border-spacing: 0px 5px;\n  \n            & tbody {\n              color: %CLR_BACKGROUND;\n              background: %CLR_PRIMARY;\n            }\n          }\n        }\n      }\n  \n      .gt-settings-header {\n        background: %CLR_PRIMARY;\n        color: %CLR_BACKGROUND;\n        float: right;\n        width: 772px;\n        margin-left: 5;\n        margin-right: 5;\n        margin-bottom: 0;\n        padding: 5px;\n        font-weight: bold;\n        border-radius: 4px 4px 0px 0px;\n        display: flex;\n        \n        & hr {\n          width: 1;\n          border-left: 1px solid %CLR_BACKGROUND;\n          height: 100%;\n        }\n        \n        & .header-option:hover {\n          cursor: pointer;\n        }\n\n        & .selected {\n          text-decoration: underline;\n        }\n      }\n    ");
+        Style.add(/*css*/ "\n      #content.gt-settings-container {  \n        & .hidden {\n          display: none;\n        }\n  \n        & .gt-settings > span {\n          float: right;\n        }\n  \n        & #gt-tools-settings {\n          & input.submit {\n            position: absolute;\n            right: 0;\n            margin: 5;\n            top: -27;\n          }\n\n          & table {\n            border-collapse: separate;\n            display: inline-block;\n          }\n\n          & table#gt-style-settings {\n            float: left;\n          }\n\n          & table#gt-mods-enabled {\n            float: right;\n          }\n  \n          & table > tbody > tr > td:nth-child(1) {\n            padding: 5px;\n            border-radius: 4px 0px 0px 4px;\n          }\n  \n          & table > tbody > tr > td:nth-last-child(1) {\n            padding: 5px;\n            border-radius: 0px 4px 4px 0px;\n          }\n  \n          & table {\n            border-collapse: separate;\n            border-spacing: 0px 5px;\n  \n            & tbody {\n              color: %CLR_BACKGROUND;\n              background: %CLR_PRIMARY;\n            }\n          }\n        }\n      }\n    ");
     };
     var gtUpdateSettingFromForm = function (e) {
         var _a;
@@ -705,8 +779,8 @@ Mod.create("settingsPage", function (mod) {
         var root, settings_root;
         return __generator(this, function (_a) {
             root = $("div#content");
-            root.before(/*html*/ "\n      <div class=\"gt-settings-header\">\n        <div id=\"my-settings-select\" class=\"header-option selected\">My Settings</div>\n        &nbsp|&nbsp\n        <div id=\"gttools-select\" class=\"header-option\">Goatling Tools</div>\n      </div>\n    ");
-            $(".gt-settings-header").after("<div id=\"content\" class=\"gt-settings-container\"></div>");
+            root.before(/*html*/ "\n      <div class=\"gt-header\">\n        <div id=\"my-settings-select\" class=\"header-option selected\">My Settings</div>\n        &nbsp|&nbsp\n        <div id=\"gttools-select\" class=\"header-option\">Goatling Tools</div>\n      </div>\n    ");
+            $(".gt-header").after("<div id=\"content\" class=\"gt-settings-container gt-has-header\"></div>");
             root.addClass("gt-settings")
                 .find("h2")[0]
                 .remove();
@@ -745,16 +819,88 @@ Mod.create("settingsPage", function (mod) {
         });
     }); };
 });
+Mod.create("inventoryTools", function (mod) {
+    mod.runsOn = ["/inventory"];
+    mod.onPreload = function () {
+        Style.add("\n      div.gt-header {\n        justify-content: space-evenly;\n        & img {\n          margin: 0;\n          width: 14;\n        }\n        & a, a:link, a:visited, a:active {\n          color: %CLR_BACKGROUND;\n        }\n        & a:hover {\n          color: %CLR_ACCENT;\n        }\n      }\n\n      div#content {\n        text-align: center;\n      }\n\n      center > .item-invent {\n        border: 1px dotted;\n        border-color: %CLR_PRIMARY;\n        border-radius: 4px;\n        height: 95px;\n        width: 95px;\n        position: relative;\n\n        & img {\n          height: 70%;\n        }\n\n        & span.item-count {\n          position: absolute;\n          top: 0;\n          right: 0;\n          margin: 5;\n          font-size: 14;\n        }\n\n        & div.item-name {\n          border-radius: 0 0 4px 4px;\n          position: absolute;\n          bottom: 0;\n          width: 100%;\n          padding: 3 0 3 0;\n          margin: 0;\n          background: %CLR_PRIMARY;\n          color: %CLR_BACKGROUND;\n        }\n\n        & a, a:link, a:visited, a:hover, a:active {\n          color: %CLR_PRIMARY;\n        }\n      }\n    ");
+    };
+    var COUNT_RE = new RegExp("Total Items: ([0-9]+)$");
+    var idToRegexp = {
+        "all-items": new RegExp("^/inventory(?:/index/[0-9]+)?/?$"),
+        "food-items": new RegExp("/food/?$"),
+        "toy-items": new RegExp("/toy/?$"),
+        "wearable-items": new RegExp("/wearable/?$"),
+        "atk-items": new RegExp("/battle_item_att/?$"),
+        "def-items": new RegExp("/battle_item_def/?$"),
+        "dodge-items": new RegExp("/speed_inc/?$"),
+        "collect-items": new RegExp("/collectible/?$"),
+        "container-items": new RegExp("/container/?$"),
+        "book-items": new RegExp("/intel_inc/?$"),
+        "icon-items": new RegExp("/usericon/?$"),
+        "doll-items": new RegExp("/pet_look/?$"),
+        "potion-items": new RegExp("/health_potion/?$"),
+        "retired-items": new RegExp("/retired/?$"),
+    };
+    mod.onActivate = function () { return __awaiter(_this, void 0, void 0, function () {
+        var root, s, uri, id;
+        return __generator(this, function (_a) {
+            root = $("div#content");
+            s = Settings.get("itemsStacked") ? 2 : 1;
+            root.before(/*html*/ "\n      <div class=\"gt-header\">\n        <div id=\"all-items\" class=\"header-option\">\n          <a href=\"/inventory/index/".concat(s, "\">All</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"food-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/food\">Food</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"toy-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/toy\">Toys</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"wearable-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/wearable\">Wearables</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"atk-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/battle_item_att\">Attacking</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"def-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/battle_item_def\">Defending</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"dodge-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/speed_inc\">Dodging</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"collect-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/collectible\">Collectibles</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"container-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/container\">Containers</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"book-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/intel_inc\">Books</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div id=\"icon-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/usericon\">Icons</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div id=\"doll-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/pet_look\">Dolls</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div id=\"potion-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/health_potion\">Potions</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div id=\"retired-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/retired\">Retired</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div class=\"header-option\">\n          <img id=\"toggle-stack\" src=\"").concat(Settings.get("itemsStacked") ? RES.image.stacked : RES.image.unstacked, "\">\n        </div>\n      </div>\n    "));
+            root.addClass('gt-has-header');
+            root.find("h2")[0].remove();
+            root.find("p").slice(0, 2).remove();
+            uri = getUri();
+            for (id in idToRegexp) {
+                if (idToRegexp[id].test(uri)) {
+                    $("div.gt-header > div#" + id).addClass("selected");
+                }
+            }
+            $("center > div.item-invent").each(function (_, item) {
+                var _a, _c;
+                var text = $(item).text();
+                var link = $(item).find("a")[0].href;
+                var imag = $(item).find("img")[0].src;
+                var count = parseSepInt((_c = (_a = COUNT_RE.exec(text)) === null || _a === void 0 ? void 0 : _a[1]) !== null && _c !== void 0 ? _c : "1");
+                text = text.replace(COUNT_RE, "");
+                var countElement = "";
+                if (count > 1)
+                    countElement = "<span class=\"item-count\">x".concat(count, "</span>");
+                $("div#content > center").append("\n        <div class=\"item-invent\">\n          <a href=\"".concat(getUri(link), "\">\n            <img src=\"").concat(getUri(imag), "\">\n            ").concat(countElement, "\n          </a>\n          <div class=\"item-name\">").concat(text, "</div>\n        </div>\n      "));
+                $(item).remove();
+            });
+            $("div.header-option > img#toggle-stack").on("click", function () {
+                var _a;
+                Settings.set("itemsStacked", Settings.get("itemsStacked") ? false : true);
+                var trailing = (_a = /^\/inventory\/index\/[0-9](.+)$/.exec(uri)) === null || _a === void 0 ? void 0 : _a[1];
+                console.log("Toggling stacks!");
+                if (trailing) {
+                    mod.logDebug("/inventory/index/".concat(Settings.get("itemsStacked") ? 2 : 1).concat(trailing));
+                    window.location.href = "/inventory/index/".concat(Settings.get("itemsStacked") ? 2 : 1).concat(trailing);
+                    return;
+                }
+                mod.logDebug("/inventory/index/".concat(Settings.get("itemsStacked") ? 2 : 1));
+                window.location.href = "/inventory/index/".concat(Settings.get("itemsStacked") ? 2 : 1);
+            });
+            return [2 /*return*/, true];
+        });
+    }); };
+});
+Style.add(/*css*/ "\n  /* Alters main content margins, and adds a border to better fit with the changes */\n  /* added by quickbar and sidebar mods */\n  div#wrapper {\n    background: none;\n\n    & div#content {\n      border: 1px solid %CLR_PRIMARY;\n      \n      width: 760px;\n      float: right;\n    }\n  }\n\n  /* Adjust the battle page content to fit better inline*/\n  #content > center > div.battle-grid {\n    padding: 0;\n  }\n\n  div#content.gt-has-header {\n    border-radius: 0px 0px 4px 4px;\n    margin-top: 0;\n  }\n");
+Style.load({
+    background: "#FFFFFF",
+    primary: "#F56A91",
+    accent: "#FF80A4",
+});
+Style.inject();
 $(function () { return __awaiter(_this, void 0, void 0, function () {
     var csrf, LOGIN_RE, userinfo_link, currency, user_1, prefix;
     var _a, _c, _d, _e, _f, _g, _h, _j, _k, _l;
     return __generator(this, function (_m) {
         switch (_m.label) {
             case 0:
-                Style.load({
-                    background: "#FFFFFF",
-                    primary: "#F56A91",
-                    accent: "#FF80A4",
+                Settings.load({
+                    "itemsStacked": false
                 });
                 csrf = null;
                 LOGIN_RE = /^\/login\/logout\/([a-zA-Z0-9]+)\/?$/;
@@ -790,7 +936,6 @@ $(function () { return __awaiter(_this, void 0, void 0, function () {
                 setInterval(function () { user_1.doUpdate(); }, User.UPDATE_WAIT_TIME * 1000);
                 _m.label = 2;
             case 2:
-                Style.inject();
                 Script.inject();
                 Mod.activateAll();
                 return [2 /*return*/];
