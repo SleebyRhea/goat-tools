@@ -5,8 +5,8 @@
 // @match       https://goatlings.com/*
 // @match       https://www.goatlings.com/*
 // @require     https://code.jquery.com/jquery-3.7.1.min.js
-// @downloadURL https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/goatlings-usability.js
-// @updateURL   https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/goatlings-usability.js
+// @downloadURL https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/build/goatlingtools.user.js
+// @updateURL   https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/build/goatlingtools.user.js
 // @license     bsd-3-clause
 // @version     1.1.0
 // ==/UserScript==
@@ -171,7 +171,6 @@ var onlyOn = function (fn) {
 };
 var Logger = /** @class */ (function () {
     function Logger(repr) {
-        this.logLevel = 1;
         this.__repr = repr;
     }
     Logger.prototype.log = function (level) {
@@ -179,7 +178,9 @@ var Logger = /** @class */ (function () {
         for (var _i = 1; _i < arguments.length; _i++) {
             msg[_i - 1] = arguments[_i];
         }
-        if (level >= this.logLevel)
+        var loglevel = Number(Settings.get("logLevel"));
+        loglevel = isNaN(loglevel) ? 1 : loglevel;
+        if (level <= loglevel)
             console.log.apply(console, __spreadArray(["[GoatTools:".concat(_b.LOG_REPR[level], "] ").concat(this.__repr(), " ")], msg, false));
     };
     Logger.prototype.logInfo = function (msg) {
@@ -218,8 +219,7 @@ var Script = /** @class */ (function () {
     }
     Script.add = function (name, fn) {
         if (this.allScripts[name])
-            return console.log("[GoatTools:WARN ] Attempted to add pre-existing script");
-        console.log("[GoatTools:DEBUG] Preparing to inject \"".concat(name, "\""));
+            return;
         this.allScripts[name] = fn.toString();
     };
     Script.inject = function () {
@@ -285,6 +285,7 @@ var Style = /** @class */ (function () {
         configurable: true
     });
     Style.allStyles = [];
+    Style.whitelist = ["background", "primary", "accent"];
     Style.settings = {
         background: "#FFFFFF",
         primary: "black",
@@ -313,11 +314,42 @@ var Settings = /** @class */ (function () {
         }
         localStorage.setItem("gt_settings", JSON.stringify(this.settings));
     };
+    Settings.whitelist = ["itemsStacked", "logLevel"];
     Settings.settings = {
         itemsStacked: false,
     };
     return Settings;
 }());
+/**
+ *
+ * @param key Setting to update
+ * @param value Value to update the setting to
+ * @returns boolean
+ */
+var gtUpdateSetting = function (key, value) {
+    var _a;
+    if (["itemsStacked", "logLevel"].indexOf(key) < 0) {
+        // TODO setup static loggign
+        // console.log(
+        //   "[GoatTools:WARN ] Setting[] Attempt to save invalid key to settings"
+        // );
+        return false;
+    }
+    var didUpdate = false;
+    // console.log(`[GoatTools:DEBUG] Style[] Setting ${key} value to ${value}`);
+    var setting = JSON.parse((_a = localStorage.getItem("gt_settings")) !== null && _a !== void 0 ? _a : "{}");
+    if (setting[key] != value) {
+        didUpdate = true;
+        if (value === "") {
+            delete setting[key];
+        }
+        else {
+            setting[key] = value;
+        }
+    }
+    localStorage.setItem("gt_settings", JSON.stringify(setting));
+    return didUpdate;
+};
 /**
  *
  * @param key Color key to update
@@ -327,11 +359,14 @@ var Settings = /** @class */ (function () {
 var gtUpdateStyle = function (key, value) {
     var _a;
     if (["background", "accent", "primary"].indexOf(key) < 0) {
-        console.log("[GoatTools:WARN ] Style[] Attempt to save invalid key to style");
+        // TODO setup static loggign
+        // console.log(
+        //   "[GoatTools:WARN ] Style[] Attempt to save invalid key to styles"
+        // );
         return false;
     }
     var didUpdate = false;
-    console.log("[GoatTools:DEBUG] Style[] Setting ".concat(key, " value to ").concat(value));
+    // console.log(`[GoatTools:DEBUG] Style[] Setting ${key} value to ${value}`);
     var style = JSON.parse((_a = localStorage.getItem("gt_style")) !== null && _a !== void 0 ? _a : "{}");
     if (style[key] != value) {
         didUpdate = true;
@@ -796,15 +831,23 @@ Mod.create("settingsPage", function (mod) {
         Style.add(/*css*/ "\n      #content.gt-settings-container {  \n        & .hidden {\n          display: none;\n        }\n  \n        & .gt-settings > span {\n          float: right;\n        }\n  \n        & #gt-tools-settings {\n          & input.submit {\n            position: absolute;\n            right: 0;\n            margin: 5;\n            top: -27;\n          }\n\n          & table {\n            border-collapse: separate;\n            display: inline-block;\n          }\n\n          & table#gt-style-settings {\n            float: left;\n          }\n\n          & table#gt-mods-enabled {\n            float: right;\n          }\n  \n          & table > tbody > tr > td:nth-child(1) {\n            padding: 5px;\n            border-radius: 4px 0px 0px 4px;\n          }\n  \n          & table > tbody > tr > td:nth-last-child(1) {\n            padding: 5px;\n            border-radius: 0px 4px 4px 0px;\n          }\n  \n          & table {\n            border-collapse: separate;\n            border-spacing: 0px 5px;\n  \n            & tbody {\n              color: %CLR_BACKGROUND;\n              background: %CLR_PRIMARY;\n            }\n          }\n        }\n      }\n    ");
     };
     var gtUpdateSettingFromForm = function (e) {
-        var _a;
+        var _a, _c;
         var updateFormArray = $(e).serializeArray();
         var didUpdate = false;
         for (var _i = 0, updateFormArray_1 = updateFormArray; _i < updateFormArray_1.length; _i++) {
             var data = updateFormArray_1[_i];
             switch (true) {
                 case /^gt\-color\-/.test((_a = data.name) !== null && _a !== void 0 ? _a : ""): {
-                    if (gtUpdateStyle(data.name.replace(/^gt\-color\-/, ""), data.value))
-                        didUpdate = true;
+                    didUpdate = gtUpdateStyle(data.name.replace(/^gt\-color\-/, ""), data.value)
+                        ? true
+                        : didUpdate;
+                    break;
+                }
+                case /^gt\-setting\-/.test((_c = data.name) !== null && _c !== void 0 ? _c : ""): {
+                    didUpdate = gtUpdateSetting(data.name.replace(/^gt\-setting\-/, ""), data.value)
+                        ? true
+                        : didUpdate;
+                    break;
                 }
             }
         }
@@ -813,6 +856,7 @@ Mod.create("settingsPage", function (mod) {
         return false;
     };
     Script.add("gtUpdateStyle", gtUpdateStyle);
+    Script.add("gtUpdateSetting", gtUpdateSetting);
     Script.add("gtUpdateSettingFromForm", gtUpdateSettingFromForm);
     mod.onActivate = function () { return __awaiter(_this, void 0, void 0, function () {
         var root, settings_root;
@@ -926,6 +970,12 @@ Mod.create("inventoryTools", function (mod) {
     }); };
 });
 Style.add(/*css*/ "\n  /* Alters main content margins, and adds a border to better fit with the changes */\n  /* added by quickbar and sidebar mods */\n  div#wrapper {\n    background: none;\n\n    & div#content {\n      border: 1px solid %CLR_PRIMARY;\n      \n      width: 760px;\n      float: right;\n    }\n  }\n\n  /* Adjust the battle page content to fit better inline*/\n  #content > center > div.battle-grid {\n    padding: 0;\n  }\n\n  div#content.gt-has-header {\n    border-radius: 0px 0px 4px 4px;\n    margin-top: 0;\n  }\n");
+Mod.create("shoppingTweaks", function (mod) {
+    mod.runsOn = ["/ShoppingDistrict"];
+    mod.onPreload = function () {
+        Style.add("\n      div#wrapper > div#content > center {\n        display: flex;\n        flex-wrap: wrap;\n        justify-content: center;\n        align-content: center;\n        & div.shoparea {\n          & img {\n            width: 95px;\n          }\n        }\n      }\n    ");
+    };
+});
 Style.load({
     background: "#FFFFFF",
     primary: "#F56A91",
@@ -943,6 +993,7 @@ $(function () { return __awaiter(_this, void 0, void 0, function () {
             case 0:
                 Settings.load({
                     itemsStacked: false,
+                    logLevel: Logger.LOG_WARNING,
                 });
                 csrf = null;
                 LOGIN_RE = /^\/login\/logout\/([a-zA-Z0-9]+)\/?$/;

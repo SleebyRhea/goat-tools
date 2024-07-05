@@ -5,8 +5,8 @@
 // @match       https://goatlings.com/*
 // @match       https://www.goatlings.com/*
 // @require     https://code.jquery.com/jquery-3.7.1.min.js
-// @downloadURL https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/goatlings-usability.js
-// @updateURL   https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/goatlings-usability.js
+// @downloadURL https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/build/goatlingtools.user.js
+// @updateURL   https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/build/goatlingtools.user.js
 // @license     bsd-3-clause
 // @version     1.1.0
 // ==/UserScript==
@@ -123,7 +123,6 @@ const onlyOn = (fn: () => any, ...uri: string[]) => {
 };
 
 class Logger {
-  logLevel: number = 1;
   __repr: () => string;
 
   constructor(repr: () => string) {
@@ -131,7 +130,9 @@ class Logger {
   }
 
   private log(level: number, ...msg: any) {
-    if (level >= this.logLevel)
+    let loglevel = Number(Settings.get("logLevel"));
+    loglevel = isNaN(loglevel) ? 1 : loglevel;
+    if (level <= loglevel)
       console.log(
         `[GoatTools:${Logger.LOG_REPR[level]}] ${this.__repr()} `,
         ...msg
@@ -173,11 +174,7 @@ class Script {
   private static allScripts: { [key: string]: string } = {};
 
   static add(name: string, fn: (...args: any[]) => any) {
-    if (this.allScripts[name])
-      return console.log(
-        "[GoatTools:WARN ] Attempted to add pre-existing script"
-      );
-    console.log(`[GoatTools:DEBUG] Preparing to inject "${name}"`);
+    if (this.allScripts[name]) return;
     this.allScripts[name] = fn.toString();
   }
 
@@ -208,6 +205,7 @@ class Script {
 
 class Style {
   private static allStyles: string[] = [];
+  static whitelist = ["background", "primary", "accent"];
 
   private static settings: { [key: string]: string } = {
     background: "#FFFFFF",
@@ -258,8 +256,12 @@ class Style {
   }
 }
 
+type ValidSetting = string | boolean | number;
+
 class Settings {
-  private static settings: { [key: string]: string | boolean } = {
+  static whitelist = ["itemsStacked", "logLevel"];
+
+  private static settings: { [key: string]: ValidSetting } = {
     itemsStacked: false,
   };
 
@@ -267,12 +269,12 @@ class Settings {
     return this.settings[property] ?? false;
   }
 
-  static set(property: string, what: string | boolean) {
+  static set(property: string, what: ValidSetting) {
     this.settings[property] = what;
     localStorage.setItem("gt_settings", JSON.stringify(this.settings));
   }
 
-  static load(defaultSet: { [key: string]: string | boolean } = {}) {
+  static load(defaultSet: { [key: string]: ValidSetting } = {}) {
     const loadedSettings = JSON.parse(
       localStorage.getItem(`gt_settings`) ?? "{}"
     );
@@ -288,20 +290,52 @@ class Settings {
 
 /**
  *
+ * @param key Setting to update
+ * @param value Value to update the setting to
+ * @returns boolean
+ */
+const gtUpdateSetting = (key: string, value: ValidSetting) => {
+  if (["itemsStacked", "logLevel"].indexOf(key) < 0) {
+    // TODO setup static loggign
+    // console.log(
+    //   "[GoatTools:WARN ] Setting[] Attempt to save invalid key to settings"
+    // );
+    return false;
+  }
+
+  let didUpdate = false;
+  // console.log(`[GoatTools:DEBUG] Style[] Setting ${key} value to ${value}`);
+  const setting = JSON.parse(localStorage.getItem("gt_settings") ?? "{}");
+  if (setting[key] != value) {
+    didUpdate = true;
+    if (value === "") {
+      delete setting[key];
+    } else {
+      setting[key] = value;
+    }
+  }
+
+  localStorage.setItem("gt_settings", JSON.stringify(setting));
+  return didUpdate;
+};
+
+/**
+ *
  * @param key Color key to update
  * @param value Value to update the color to
  * @returns boolean
  */
 const gtUpdateStyle = (key: string, value: any) => {
   if (["background", "accent", "primary"].indexOf(key) < 0) {
-    console.log(
-      "[GoatTools:WARN ] Style[] Attempt to save invalid key to style"
-    );
+    // TODO setup static loggign
+    // console.log(
+    //   "[GoatTools:WARN ] Style[] Attempt to save invalid key to styles"
+    // );
     return false;
   }
 
   let didUpdate = false;
-  console.log(`[GoatTools:DEBUG] Style[] Setting ${key} value to ${value}`);
+  // console.log(`[GoatTools:DEBUG] Style[] Setting ${key} value to ${value}`);
   const style = JSON.parse(localStorage.getItem("gt_style") ?? "{}");
   if (style[key] != value) {
     didUpdate = true;
@@ -1066,8 +1100,23 @@ Mod.create("settingsPage", (mod) => {
     for (const data of updateFormArray) {
       switch (true) {
         case /^gt\-color\-/.test(data.name ?? ""): {
-          if (gtUpdateStyle(data.name.replace(/^gt\-color\-/, ""), data.value))
-            didUpdate = true;
+          didUpdate = gtUpdateStyle(
+            data.name.replace(/^gt\-color\-/, ""),
+            data.value
+          )
+            ? true
+            : didUpdate;
+          break;
+        }
+        case /^gt\-setting\-/.test(data.name ?? ""): {
+          didUpdate = gtUpdateSetting(
+            data.name.replace(/^gt\-setting\-/, ""),
+            data.value
+          )
+            ? true
+            : didUpdate;
+
+          break;
         }
       }
     }
@@ -1078,6 +1127,7 @@ Mod.create("settingsPage", (mod) => {
   };
 
   Script.add("gtUpdateStyle", gtUpdateStyle);
+  Script.add("gtUpdateSetting", gtUpdateSetting);
   Script.add("gtUpdateSettingFromForm", gtUpdateSettingFromForm);
 
   mod.onActivate = async () => {
@@ -1438,6 +1488,25 @@ Style.add(/*css*/ `
   }
 `);
 
+Mod.create("shoppingTweaks", (mod) => {
+  mod.runsOn = ["/ShoppingDistrict"];
+  mod.onPreload = () => {
+    Style.add(`
+      div#wrapper > div#content > center {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: center;
+        & div.shoparea {
+          & img {
+            width: 95px;
+          }
+        }
+      }
+    `);
+  };
+});
+
 Style.load({
   background: "#FFFFFF",
   primary: "#F56A91",
@@ -1452,6 +1521,7 @@ Style.inject();
 $(async () => {
   Settings.load({
     itemsStacked: false,
+    logLevel: Logger.LOG_WARNING,
   });
 
   // Pull the page CSRF from the logout section of the sidebar
