@@ -87,45 +87,49 @@ var RES = {
     image: {
         mail: "/images/layout/mail3.gif",
         sugarstars: "/images/layout/SS2.gif",
-    }
+    },
 };
 /**
  * The original DD2.gif file - $site/images/layout/DD2.gif - contains no alpha
  * channel. This blob is simply a version of that image that includes one.
  */
-RES.image.dd3 = "data:image/gif;base64, R0lGODlhFAAUAMZ6AP7//wDm9v79zf/8zLTy////zQLl9v/+zf/9/v/+0Lbx/wLl+ADl+P7+zP/+//7"
-    + "8y//8/wPk9gLk9AHk9wHk9QPm97j0/7Pz//7//f/9zgLk+rjy///+y//9ygXj+rTy/QHn9///zAHm+f/8zwPl9QDk9//+/P7+/P//0/3/zgDl+gDn9"
-    + "QDm9bjw/f3//Pz/zrfx/P//zwPk+v///f7+/rHz/wDk+f7+//3+0v/8zbL1/gXk9QDn+QDm8gDm+Lfx/bfz+7jx/Lby/ATl+f79ywDm9ATi9//7zf7"
-    + "/z///zv780//+0v3+/7fz/gHj+QDn+7by+gDl97Pz/f//y7T0///7y//90vz9///9/7Px/v/7z7Xz/wDl9bL1+wHn9rXz/v//0f3/+gLj9bT0/v7/0"
-    + "f3/zf3//rX1/gDm8wPl8///+/79////+v7+yrXw/v/+z/78zADj87fy/wLi+7Ly/gDl/P/9zQPm+f/90P/+zv/////9zP///////////////yH/C05"
-    + "FVFNDQVBFMi4wAwEAAAAh/hFDcmVhdGVkIHdpdGggR0lNUAAh+QQJMgB/ACwAAAAAFAAUAEAH2oB/goOEhYJ3hAEtQCASBB8wOgoEFiUMdBsahIiDA"
-    + "XoIeiqGo6SDnIkwNSsuWBAALhJfXROlpXd3ELeDTqAYJgYKW1kMDg4zax6EFQRyZxQAn3oOJxglQlJuC5uHH3EnAABiGxG1hRTlhAS1p6Pqo+yCFTZ"
-    + "RXHdPEiILczxFIIUTCmQw0ePjB5UgTS6gQQCAAhRNgiKoCJDGwwoSMgyQGMKCAYMddbQNMkBAAYsbNNTQCKNHz4ILFgyMEjEmgoMrbEwAqNAigCFcn"
-    + "LwY0WNmhgGf6AT1AEArqdNAACH5BAkyAH8ALAEAAAATABIAQAfQgH+Cg4SFhQEtQCASBB8wOgoEFiUMdBsahoIBegh6KoJ3EHeDo5mmhAEwNSsuWBA"
-    + "ALhJfXROEpaemTp0YJgYKW1kMDg4zax6DFQRyZxQAnHoOJxglQlJuC4MEoB9xJwAAYhsRuOSkouWZFTZRXHdPEiILczxFIIQTCjJMej4/VEFNLqBBA"
-    + "IACFEx/IqgIkMbDChIyDJAYwoIBgx11sAkyQEABixs01NAIo0fPggsWDBgSMSaCgytsTACo0CIALi9G9JiZYcDmn1umegCoRWpQIAA";
+RES.image.dd3 =
+    "data:image/gif;base64, R0lGODlhFAAUAMZ6AP7//wDm9v79zf/8zLTy////zQLl9v/+zf/9/v/+0Lbx/wLl+ADl+P7+zP/+//7" +
+        "8y//8/wPk9gLk9AHk9wHk9QPm97j0/7Pz//7//f/9zgLk+rjy///+y//9ygXj+rTy/QHn9///zAHm+f/8zwPl9QDk9//+/P7+/P//0/3/zgDl+gDn9" +
+        "QDm9bjw/f3//Pz/zrfx/P//zwPk+v///f7+/rHz/wDk+f7+//3+0v/8zbL1/gXk9QDn+QDm8gDm+Lfx/bfz+7jx/Lby/ATl+f79ywDm9ATi9//7zf7" +
+        "/z///zv780//+0v3+/7fz/gHj+QDn+7by+gDl97Pz/f//y7T0///7y//90vz9///9/7Px/v/7z7Xz/wDl9bL1+wHn9rXz/v//0f3/+gLj9bT0/v7/0" +
+        "f3/zf3//rX1/gDm8wPl8///+/79////+v7+yrXw/v/+z/78zADj87fy/wLi+7Ly/gDl/P/9zQPm+f/90P/+zv/////9zP///////////////yH/C05" +
+        "FVFNDQVBFMi4wAwEAAAAh/hFDcmVhdGVkIHdpdGggR0lNUAAh+QQJMgB/ACwAAAAAFAAUAEAH2oB/goOEhYJ3hAEtQCASBB8wOgoEFiUMdBsahIiDA" +
+        "XoIeiqGo6SDnIkwNSsuWBAALhJfXROlpXd3ELeDTqAYJgYKW1kMDg4zax6EFQRyZxQAn3oOJxglQlJuC5uHH3EnAABiGxG1hRTlhAS1p6Pqo+yCFTZ" +
+        "RXHdPEiILczxFIIUTCmQw0ePjB5UgTS6gQQCAAhRNgiKoCJDGwwoSMgyQGMKCAYMddbQNMkBAAYsbNNTQCKNHz4ILFgyMEjEmgoMrbEwAqNAigCFcn" +
+        "LwY0WNmhgGf6AT1AEArqdNAACH5BAkyAH8ALAEAAAATABIAQAfQgH+Cg4SFhQEtQCASBB8wOgoEFiUMdBsahoIBegh6KoJ3EHeDo5mmhAEwNSsuWBA" +
+        "ALhJfXROEpaemTp0YJgYKW1kMDg4zax6DFQRyZxQAnHoOJxglQlJuC4MEoB9xJwAAYhsRuOSkouWZFTZRXHdPEiILczxFIIQTCjJMej4/VEFNLqBBA" +
+        "IACFEx/IqgIkMbDChIyDJAYwoIBgx11sAkyQEABixs01NAIo0fPggsWDBgSMSaCgytsTACo0CIALi9G9JiZYcDmn1umegCoRWpQIAA";
 /**
  * Goatling Tools Save animation on /settings
  */
-RES.image.save = "data:image/gif;base64, R0lGODdhFAAUAHcAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQJCgAAACwAAAAAFAAUAIMAAAAiIDQeUD"
-    + "w3lG5bbuFjm/+Pj4/AwMD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAEb1BIc6q9RoANxBjUVQXBYQza5oHiWJ6o+oUiaX7pSl82nM+tQw8nYwUrvqJh"
-    + "yWwuiZ2PdDolWH/U7IBQIGC1HytXHEWYz2huYd0tO53qdhlNN49/iPebEJvX630eeXpNCIEDf3+HYFopHRKQkZKOEQAh+QQJCgAAACwAAAAAFAAUAI"
-    + "MAAAAiIDQeUDw3lG5bbuFjm/+Pj4/AwMD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAEalBIc6q9RoANxBjUVQXBYQza5oHiWJ6o+oUiaX7pSl82nM+t"
-    + "Qw8nYwUrvqJhyWwuiZ2PdEqFrqrYWDQ7JXh/iLB4HCYUCGBn02tmR8lkc2F+fqvXdIIMDm+n72taHnx8glxYKR0Si4yNiREAIfkECQoAAAAsAAAAAB"
-    + "QAFACDAAAAIiA0HlA8N5RuW27hY5v/j4+PwMDA////AAAAAAAAAAAAAAAAAAAAAAAAAAAABG1QSHOqvUaADcQY1FUFwWEM2uaB4lieqPqFIml+6Upf"
-    + "NpzPrUMPJ2MFK76iYclsLomdj3RKha6q2Fg0i/0hvuBwWOtBOM+EtFfMJhQI3jMz7aZH2WF3Yf++y+d8BDJ4YnU/XFMEWh0SjY6PKQARACH5BAUKAA"
-    + "AALAAAAAAUABQAgwAAACIgNB5QPDeUbltu4WOb/4+Pj8DAwP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAARqUEhzqr1GgA3EGNRVBcFhDNrmgeJYnqj6"
-    + "hSJpfulKXzacz61DDydjBSu+omHJbC6JnY90SoWuqthYNDsleH+IsHgcJhQIYGfTa2ZHyWRzYX5+q9d0ggwOb6fva1oefHyCXFgpHRKLjI2JEQA7";
-RES.image.stacked = "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAANlJREFUSIl"
-    + "jZEACaZaG/xmoBGYdP8/IwMDAwIJu+OMPn6llBwOKBciGb7uyniJDGZl1GbFawMDAwNCyqInh3LnLZBtubBrFiMzHsMDISJdswxkYGBj+/738H68Pv"
-    + "HQCGVoWNZFtAboP4BxqR/L263cYUSxAtoQaAJZMMXxATcNRLPDUVKGKBbICvCiWoATR/7+XKbLESycQbglWCxgYGBjOnl5GkSU1cXUoFqAkU0p9gA2"
-    + "gWMDIrMtIiQ9q4uowxGgeySzoEtQAWJMpA8NofYAAo/UBXjD86gMAmXlwBoegD/UAAAAASUVORK5CYII=";
-RES.image.unstacked = "data:image/gif;base64, iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAUpJREFUS"
-    + "IntlT1ug0AQhWdtt0hcgC5NJCigQ/IFQscFXOIuh7Dc5QR2SZHWnXOBSC4srwsspUnHBZCoo0310ODsxPwocpOvWRh239vZn4Hon3ujsjg0ZVXT28e"
-    + "n4h+eHh+M5zq0PZyVNBhkcWhs8e3hrGZ4MV+FUdNAoe06Q4iXVd2Ke65DWRyaCQ+ejq+Gt12B+P6yo3W+asUm4qieQBhGYGbr3AVp3a8ZZICDATzXE"
-    + "fv2XiKIY733lx2VVU2b55fxBlxc64KiKKDlfNGYLOeL4QY2cTUN1OY9p8RPxUw6GUjivI/WhTWTmwZc3AaWCMAEG3/TgItLs5cyIWK1COlLp2EIZVW"
-    + "37wHEr+vKUDzX+XnReF0ZQ+KnRCTc5HW+Iq2LweJRFDTPVgPeYSyNQeKnzdFK/LRVHfvCJ6j4DwMGf7LJvCL+Vh378g38zcYi1It/3wAAAABJRU5Er"
-    + "kJggg==";
+RES.image.save =
+    "data:image/gif;base64, R0lGODdhFAAUAHcAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQJCgAAACwAAAAAFAAUAIMAAAAiIDQeUD" +
+        "w3lG5bbuFjm/+Pj4/AwMD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAEb1BIc6q9RoANxBjUVQXBYQza5oHiWJ6o+oUiaX7pSl82nM+tQw8nYwUrvqJh" +
+        "yWwuiZ2PdDolWH/U7IBQIGC1HytXHEWYz2huYd0tO53qdhlNN49/iPebEJvX630eeXpNCIEDf3+HYFopHRKQkZKOEQAh+QQJCgAAACwAAAAAFAAUAI" +
+        "MAAAAiIDQeUDw3lG5bbuFjm/+Pj4/AwMD///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAEalBIc6q9RoANxBjUVQXBYQza5oHiWJ6o+oUiaX7pSl82nM+t" +
+        "Qw8nYwUrvqJhyWwuiZ2PdEqFrqrYWDQ7JXh/iLB4HCYUCGBn02tmR8lkc2F+fqvXdIIMDm+n72taHnx8glxYKR0Si4yNiREAIfkECQoAAAAsAAAAAB" +
+        "QAFACDAAAAIiA0HlA8N5RuW27hY5v/j4+PwMDA////AAAAAAAAAAAAAAAAAAAAAAAAAAAABG1QSHOqvUaADcQY1FUFwWEM2uaB4lieqPqFIml+6Upf" +
+        "NpzPrUMPJ2MFK76iYclsLomdj3RKha6q2Fg0i/0hvuBwWOtBOM+EtFfMJhQI3jMz7aZH2WF3Yf++y+d8BDJ4YnU/XFMEWh0SjY6PKQARACH5BAUKAA" +
+        "AALAAAAAAUABQAgwAAACIgNB5QPDeUbltu4WOb/4+Pj8DAwP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAARqUEhzqr1GgA3EGNRVBcFhDNrmgeJYnqj6" +
+        "hSJpfulKXzacz61DDydjBSu+omHJbC6JnY90SoWuqthYNDsleH+IsHgcJhQIYGfTa2ZHyWRzYX5+q9d0ggwOb6fva1oefHyCXFgpHRKLjI2JEQA7";
+RES.image.stacked =
+    "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAANlJREFUSIl" +
+        "jZEACaZaG/xmoBGYdP8/IwMDAwIJu+OMPn6llBwOKBciGb7uyniJDGZl1GbFawMDAwNCyqInh3LnLZBtubBrFiMzHsMDISJdswxkYGBj+/738H68Pv" +
+        "HQCGVoWNZFtAboP4BxqR/L263cYUSxAtoQaAJZMMXxATcNRLPDUVKGKBbICvCiWoATR/7+XKbLESycQbglWCxgYGBjOnl5GkSU1cXUoFqAkU0p9gA2" +
+        "gWMDIrMtIiQ9q4uowxGgeySzoEtQAWJMpA8NofYAAo/UBXjD86gMAmXlwBoegD/UAAAAASUVORK5CYII=";
+RES.image.unstacked =
+    "data:image/gif;base64, iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAUpJREFUS" +
+        "IntlT1ug0AQhWdtt0hcgC5NJCigQ/IFQscFXOIuh7Dc5QR2SZHWnXOBSC4srwsspUnHBZCoo0310ODsxPwocpOvWRh239vZn4Hon3ujsjg0ZVXT28e" +
+        "n4h+eHh+M5zq0PZyVNBhkcWhs8e3hrGZ4MV+FUdNAoe06Q4iXVd2Ke65DWRyaCQ+ejq+Gt12B+P6yo3W+asUm4qieQBhGYGbr3AVp3a8ZZICDATzXE" +
+        "fv2XiKIY733lx2VVU2b55fxBlxc64KiKKDlfNGYLOeL4QY2cTUN1OY9p8RPxUw6GUjivI/WhTWTmwZc3AaWCMAEG3/TgItLs5cyIWK1COlLp2EIZVW" +
+        "37wHEr+vKUDzX+XnReF0ZQ+KnRCTc5HW+Iq2LweJRFDTPVgPeYSyNQeKnzdFK/LRVHfvCJ6j4DwMGf7LJvCL+Vh378g38zcYi1It/3wAAAABJRU5Er" +
+        "kJggg==";
 var PAGE = "https://www.goatlings.com";
 /**
  * Return the URI portion of a page url
@@ -178,11 +182,21 @@ var Logger = /** @class */ (function () {
         if (level >= this.logLevel)
             console.log.apply(console, __spreadArray(["[GoatTools:".concat(_b.LOG_REPR[level], "] ").concat(this.__repr(), " ")], msg, false));
     };
-    Logger.prototype.logInfo = function (msg) { return this.log(_b.LOG_INFO, msg); };
-    Logger.prototype.logWarn = function (msg) { return this.log(_b.LOG_WARNING, msg); };
-    Logger.prototype.logError = function (msg) { return this.log(_b.LOG_ERROR, msg); };
-    Logger.prototype.logDebug = function (msg) { return this.log(_b.LOG_DEBUG, msg); };
-    Logger.prototype.logVerbose = function (msg) { return this.log(_b.LOG_VERBOSE, msg); };
+    Logger.prototype.logInfo = function (msg) {
+        return this.log(_b.LOG_INFO, msg);
+    };
+    Logger.prototype.logWarn = function (msg) {
+        return this.log(_b.LOG_WARNING, msg);
+    };
+    Logger.prototype.logError = function (msg) {
+        return this.log(_b.LOG_ERROR, msg);
+    };
+    Logger.prototype.logDebug = function (msg) {
+        return this.log(_b.LOG_DEBUG, msg);
+    };
+    Logger.prototype.logVerbose = function (msg) {
+        return this.log(_b.LOG_VERBOSE, msg);
+    };
     var _b;
     _b = Logger;
     Logger.LOG_ERROR = 0;
@@ -210,7 +224,10 @@ var Script = /** @class */ (function () {
     };
     Script.inject = function () {
         for (var s in this.allScripts) {
-            $("<script>").prop("type", "text/javascript").html("\n          const ".concat(s, "Actual = ").concat(this.allScripts[s], "\n          const ").concat(s, " = (...args) => {\n            try {\n              return ").concat(s, "Actual(...args)\n            }\n\n            catch (e) {\n              console.log(e)\n            }\n\n            return false\n          }\n        ")).appendTo("head");
+            $("<script>")
+                .prop("type", "text/javascript")
+                .html("\n          const ".concat(s, "Actual = ").concat(this.allScripts[s], "\n          const ").concat(s, " = (...args) => {\n            try {\n              return ").concat(s, "Actual(...args)\n            }\n\n            catch (e) {\n              console.log(e)\n            }\n\n            return false\n          }\n        "))
+                .appendTo("head");
         }
     };
     Script.allScripts = {};
@@ -237,23 +254,33 @@ var Style = /** @class */ (function () {
         localStorage.setItem("gt_style", JSON.stringify(this.settings));
     };
     Style.inject = function () {
-        $("<style>").prop("type", "text/css").html(this.allStyles.join(" ")
+        $("<style>")
+            .prop("type", "text/css")
+            .html(this.allStyles
+            .join(" ")
             .replaceAll(/%CLR_BACKGROUND/g, this.settings.background)
             .replaceAll(/%CLR_PRIMARY/g, this.settings.primary)
-            .replaceAll(/%CLR_ACCENT/g, this.settings.accent)).appendTo("head");
+            .replaceAll(/%CLR_ACCENT/g, this.settings.accent))
+            .appendTo("head");
     };
     Object.defineProperty(Style, "background", {
-        set: function (color) { this.settings.background = color; },
+        set: function (color) {
+            this.settings.background = color;
+        },
         enumerable: false,
         configurable: true
     });
     Object.defineProperty(Style, "primary", {
-        set: function (color) { this.settings.primary = color; },
+        set: function (color) {
+            this.settings.primary = color;
+        },
         enumerable: false,
         configurable: true
     });
     Object.defineProperty(Style, "accent", {
-        set: function (color) { this.settings.accent = color; },
+        set: function (color) {
+            this.settings.accent = color;
+        },
         enumerable: false,
         configurable: true
     });
@@ -324,7 +351,9 @@ var gtUpdateStyle = function (key, value) {
 var User = /** @class */ (function (_super) {
     __extends(User, _super);
     function User(uuid, name) {
-        var _this = _super.call(this, function () { return _this.name ? "User[".concat(String(_this.name), "]") : "User[GuestUser]"; }) || this;
+        var _this = _super.call(this, function () {
+            return _this.name ? "User[".concat(String(_this.name), "]") : "User[GuestUser]";
+        }) || this;
         _this.uuid = uuid;
         _this.name = name;
         return _this;
@@ -362,7 +391,9 @@ var User = /** @class */ (function (_super) {
             var goat_def = (_a = $(e).text()) === null || _a === void 0 ? void 0 : _a.replace(/[\s]+/g, ";").split(";");
             goat_def.shift();
             goat_def.pop();
-            $(e).find("a").each(function (_, a) {
+            $(e)
+                .find("a")
+                .each(function (_, a) {
                 var _a;
                 if (pet_id != "")
                     return;
@@ -414,11 +445,13 @@ var User = /** @class */ (function (_super) {
                 else {
                     this.logDebug("Fetching pet data from /mypets ...");
                     $.ajax({
-                        url: "".concat(PAGE, "/mypets"), async: true, success: function (data) {
+                        url: "".concat(PAGE, "/mypets"),
+                        async: true,
+                        success: function (data) {
                             _this.__goatlings = _this.updateGoatlingsActual($(data).find("div.mypets-pet"));
                             localStorage.setItem("".concat(_this.uuid, "_goatlings"), JSON.stringify(_this.__goatlings));
                             _this.logDebug("updateGoatlings() Finished update");
-                        }
+                        },
                     });
                 }
                 localStorage.setItem("".concat(this.uuid, "_goatlings_last_update"), "".concat(Math.floor(Date.now() / 1000)));
@@ -436,7 +469,7 @@ var User = /** @class */ (function (_super) {
             return __generator(this, function (_c) {
                 now = Math.floor(Date.now() / 1000);
                 last = Math.floor(parseSepInt((_a = localStorage.getItem("".concat(this.uuid, "_").concat(what, "_last_update"))) !== null && _a !== void 0 ? _a : "0"));
-                if ((now - last) >= User.UPDATE_WAIT_TIME)
+                if (now - last >= User.UPDATE_WAIT_TIME)
                     return [2 /*return*/, true];
                 return [2 /*return*/, false];
             });
@@ -466,19 +499,27 @@ var User = /** @class */ (function (_super) {
 var Mod = /** @class */ (function (_super) {
     __extends(Mod, _super);
     function Mod(name) {
-        var _this = _super.call(this, function () { return "Mod[".concat(name, "]"); }) || this;
+        var _this = _super.call(this, function () {
+            return "Mod[".concat(name, "]");
+        }) || this;
         _this.name = "";
         _this.runsOn = [];
         _this.name = name;
         _this.enabled = true;
-        _this.onActivate = function () { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
-            return [2 /*return*/, true];
-        }); }); };
-        _this.onPreload = function () { return true; };
+        _this.onActivate = function () { return __awaiter(_this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2 /*return*/, true];
+            });
+        }); };
+        _this.onPreload = function () {
+            return true;
+        };
         return _this;
     }
     Object.defineProperty(Mod.prototype, "user", {
-        get: function () { return Mod.user; },
+        get: function () {
+            return Mod.user;
+        },
         enumerable: false,
         configurable: true
     });
@@ -595,7 +636,7 @@ Mod.create("hagglePrice", function (mod) {
             price = parseSepInt(priceText[1].replace(",", ""));
             if (price == 0)
                 return [2 /*return*/, false];
-            $("#content > center > form").before("\n      <div class=\"gt-haggle-price\">Haggle price: <b>".concat(price * 0.80, "</b></div><br>\n    "));
+            $("#content > center > form").before("\n      <div class=\"gt-haggle-price\">Haggle price: <b>".concat(price * 0.8, "</b></div><br>\n    "));
             return [2 /*return*/, true];
         });
     }); };
@@ -654,8 +695,7 @@ Mod.create("quickbar", function (mod) {
                 pfx = (_a = m.user) === null || _a === void 0 ? void 0 : _a.prefix;
                 if (pfx)
                     user_pfx_element = "<img src=\"".concat(pfx, "\">");
-                user_info =
-                    "<div class=\"user-info\">\n          <span>Welcome ".concat(user_pfx_element, "<a href=\"/profile/u/").concat((_c = m.user) === null || _c === void 0 ? void 0 : _c.uuid, "\">").concat(m.user.name, "</a></span>\n          <span class=\"sep\"><a href=\"/mail/index/\"><img src=\"").concat(RES.image.mail, "\"></a></span>\n          <span class=\"sep\"><a href=\"/cashshop\">").concat(m.user.daimonddust, " <img src=\"").concat(RES.image.dd3, "\"></a></span>\n          <span class=\"sep\"><a href=\"/bank\">").concat(m.user.sugarstars, " <img src=\"").concat(RES.image.sugarstars, "\"></a></span>\n        </div>");
+                user_info = "<div class=\"user-info\">\n          <span>Welcome ".concat(user_pfx_element, "<a href=\"/profile/u/").concat((_c = m.user) === null || _c === void 0 ? void 0 : _c.uuid, "\">").concat(m.user.name, "</a></span>\n          <span class=\"sep\"><a href=\"/mail/index/\"><img src=\"").concat(RES.image.mail, "\"></a></span>\n          <span class=\"sep\"><a href=\"/cashshop\">").concat(m.user.daimonddust, " <img src=\"").concat(RES.image.dd3, "\"></a></span>\n          <span class=\"sep\"><a href=\"/bank\">").concat(m.user.sugarstars, " <img src=\"").concat(RES.image.sugarstars, "\"></a></span>\n        </div>");
                 logout_link = "<a href=\"/login/logout/".concat(m.user.csrf, "\">Logout</a><br>");
             }
             else {
@@ -680,9 +720,9 @@ Mod.create("petHeader", function (mod) {
         cur = cur !== null && cur !== void 0 ? cur : 0;
         max = max !== null && max !== void 0 ? max : 100;
         var ratio = cur / max;
-        if (ratio >= .5)
+        if (ratio >= 0.5)
             return "normal";
-        if (ratio <= .25)
+        if (ratio <= 0.25)
             return "peril";
         return "danger";
     };
@@ -704,8 +744,7 @@ Mod.create("petHeader", function (mod) {
                     $("div#header > div#active_pet_image > img")
                         .wrap("<a href=\"/mypets\"></a>")
                         .parent()
-                        .parent()
-                        .after("\n        <div class=\"active_pet_stats\">\n          <div class=\"stat-header\">Level:  <span>".concat(active.level, "</span><br></div>\n          <b>Hp</b>:     <span class=\"").concat(getStatClass(active.current_hp, active.max_hp), "\">").concat(hp, "</span><br>\n          <b>Hunger</b>: <span class=\"").concat(getStatClass(active.hunger), "\">").concat(active.hunger, "/100</span><br>\n          <b>Mood</b>:   <span class=\"").concat(getStatClass(active.mood), "\">").concat(active.mood, "/100</span><br><hr>\n          <b>Wins</b>:   <span >").concat(active.wins, "</span><br>\n          <b>Loss</b>:   <span >").concat(active.losses, "</span><br>\n        </div>\n        <div class=\"active_exp_bar\" style=\"background: linear-gradient(to right, ").concat(Style.get("accent"), " ").concat(ratio, "%, ").concat(Style.get("background"), " ").concat(ratio, "%)\"></div>\n      "));
+                        .parent().after("\n        <div class=\"active_pet_stats\">\n          <div class=\"stat-header\">Level:  <span>".concat(active.level, "</span><br></div>\n          <b>Hp</b>:     <span class=\"").concat(getStatClass(active.current_hp, active.max_hp), "\">").concat(hp, "</span><br>\n          <b>Hunger</b>: <span class=\"").concat(getStatClass(active.hunger), "\">").concat(active.hunger, "/100</span><br>\n          <b>Mood</b>:   <span class=\"").concat(getStatClass(active.mood), "\">").concat(active.mood, "/100</span><br><hr>\n          <b>Wins</b>:   <span >").concat(active.wins, "</span><br>\n          <b>Loss</b>:   <span >").concat(active.losses, "</span><br>\n        </div>\n        <div class=\"active_exp_bar\" style=\"background: linear-gradient(to right, ").concat(Style.get("accent"), " ").concat(ratio, "%, ").concat(Style.get("background"), " ").concat(ratio, "%)\"></div>\n      "));
                     return [2 /*return*/, true];
             }
         });
@@ -734,9 +773,9 @@ Mod.create("pageUpdates", function (mod) {
                         if (doUpdate)
                             return;
                         var text = $(e).text();
-                        if (/Their [^\s]+ increased by/.test(text)
-                            || /has their hp healed/.test(text)
-                            || /Mood ([+-][\d]+)/.test(text))
+                        if (/Their [^\s]+ increased by/.test(text) ||
+                            /has their hp healed/.test(text) ||
+                            /Mood ([+-][\d]+)/.test(text))
                             doUpdate = true;
                     });
                     break;
@@ -781,9 +820,7 @@ Mod.create("settingsPage", function (mod) {
             root = $("div#content");
             root.before(/*html*/ "\n      <div class=\"gt-header\">\n        <div id=\"my-settings-select\" class=\"header-option selected\">My Settings</div>\n        &nbsp|&nbsp\n        <div id=\"gttools-select\" class=\"header-option\">Goatling Tools</div>\n      </div>\n    ");
             $(".gt-header").after("<div id=\"content\" class=\"gt-settings-container gt-has-header\"></div>");
-            root.addClass("gt-settings")
-                .find("h2")[0]
-                .remove();
+            root.addClass("gt-settings").find("h2")[0].remove();
             settings_root = $("div#content.gt-settings-container");
             root.attr("id", "my-settings").appendTo(settings_root);
             settings_root.append(/*html*/ "\n      <div id=\"gt-tools-settings\" class=\"gt-settings hidden\">\n        <form id=\"gt-update-settings\" onsubmit=\"return gtUpdateSettingFromForm(this)\">\n        <input class=\"submit\" type=\"image\" src=\"".concat(RES.image.save, "\" value=\"Update\" name=\"gt-submit\">\n        <table id=\"gt-style-settings\">\n          <tbody>\n            <tr>\n              <td>\n                <b>Styling options:</b><br>\n                &nbsp&nbsp<b>-</b> Colors must be a hex value <br>\n                &nbsp&nbsp<b>-</b> An empty field resets the color <br>\n              </td>\n              <td></td>\n            </tr>\n            <tr>\n              <td>Background Color</td>\n              <td><input type=\"text\" value=\"").concat(Style.get("background"), "\" name=\"gt-color-background\"></td>\n            </tr>\n\n            <tr>\n              <td>Primary Color</td>\n              <td><input type=\"text\" value=\"").concat(Style.get("primary"), "\" name=\"gt-color-primary\"></td>\n            </tr>\n\n            <tr>\n              <td>Accent Color</td>\n              <td><input type=\"text\" value=\"").concat(Style.get("accent"), "\" name=\"gt-color-accent\"></td>\n            </tr>\n          </tbody>\n        </table>\n        <!--\n        <table id=\"gt-mods-enabled\">\n          <tbody>\n            <tr>\n              <td><b>Enabled Mods</b><td>\n              <td><td>\n            </tr>\n          </tbody>\n        </table>\n        -->\n        </form>\n      </div>\n    "));
@@ -846,8 +883,10 @@ Mod.create("inventoryTools", function (mod) {
         return __generator(this, function (_a) {
             root = $("div#content");
             s = Settings.get("itemsStacked") ? 2 : 1;
-            root.before(/*html*/ "\n      <div class=\"gt-header\">\n        <div id=\"all-items\" class=\"header-option\">\n          <a href=\"/inventory/index/".concat(s, "\">All</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"food-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/food\">Food</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"toy-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/toy\">Toys</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"wearable-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/wearable\">Wearables</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"atk-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/battle_item_att\">Attacking</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"def-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/battle_item_def\">Defending</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"dodge-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/speed_inc\">Dodging</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"collect-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/collectible\">Collectibles</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"container-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/container\">Containers</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"book-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/intel_inc\">Books</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div id=\"icon-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/usericon\">Icons</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div id=\"doll-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/pet_look\">Dolls</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div id=\"potion-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/health_potion\">Potions</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div id=\"retired-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/retired\">Retired</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div class=\"header-option\">\n          <img id=\"toggle-stack\" src=\"").concat(Settings.get("itemsStacked") ? RES.image.stacked : RES.image.unstacked, "\">\n        </div>\n      </div>\n    "));
-            root.addClass('gt-has-header');
+            root.before(/*html*/ "\n      <div class=\"gt-header\">\n        <div id=\"all-items\" class=\"header-option\">\n          <a href=\"/inventory/index/".concat(s, "\">All</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"food-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/food\">Food</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"toy-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/toy\">Toys</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"wearable-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/wearable\">Wearables</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"atk-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/battle_item_att\">Attacking</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"def-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/battle_item_def\">Defending</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"dodge-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/speed_inc\">Dodging</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"collect-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/collectible\">Collectibles</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"container-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/container\">Containers</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"book-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/intel_inc\">Books</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div id=\"icon-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/usericon\">Icons</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div id=\"doll-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/pet_look\">Dolls</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div id=\"potion-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/health_potion\">Potions</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div id=\"retired-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/retired\">Retired</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div class=\"header-option\">\n          <img id=\"toggle-stack\" src=\"").concat(Settings.get("itemsStacked")
+                ? RES.image.stacked
+                : RES.image.unstacked, "\">\n        </div>\n      </div>\n    "));
+            root.addClass("gt-has-header");
             root.find("h2")[0].remove();
             root.find("p").slice(0, 2).remove();
             uri = getUri();
@@ -893,6 +932,9 @@ Style.load({
     accent: "#FF80A4",
 });
 Style.inject();
+/**
+ * Main Entrypoint
+ */
 $(function () { return __awaiter(_this, void 0, void 0, function () {
     var csrf, LOGIN_RE, userinfo_link, currency, user_1, prefix;
     var _a, _c, _d, _e, _f, _g, _h, _j, _k, _l;
@@ -900,7 +942,7 @@ $(function () { return __awaiter(_this, void 0, void 0, function () {
         switch (_m.label) {
             case 0:
                 Settings.load({
-                    "itemsStacked": false
+                    itemsStacked: false,
                 });
                 csrf = null;
                 LOGIN_RE = /^\/login\/logout\/([a-zA-Z0-9]+)\/?$/;
@@ -924,7 +966,8 @@ $(function () { return __awaiter(_this, void 0, void 0, function () {
                 user_1.daimonddust = parseSepInt((_f = currency[1]) !== null && _f !== void 0 ? _f : "0");
                 user_1.csrf = csrf;
                 // Parse out the active goatling from the DOM, if present
-                user_1.active = (_j = (_h = (_g = (/Welcome\s+[^\s]+\s+-\s+Your\s+active\s+Goatling\s+is\s+([^\s]+)/)) === null || _g === void 0 ? void 0 : _g.exec($("div#user-info").text())) === null || _h === void 0 ? void 0 : _h[1]) !== null && _j !== void 0 ? _j : null;
+                user_1.active =
+                    (_j = (_h = (_g = /Welcome\s+[^\s]+\s+-\s+Your\s+active\s+Goatling\s+is\s+([^\s]+)/) === null || _g === void 0 ? void 0 : _g.exec($("div#user-info").text())) === null || _h === void 0 ? void 0 : _h[1]) !== null && _j !== void 0 ? _j : null;
                 prefix = null;
                 prefix = (_l = (_k = $("div#user-info > span > img")) === null || _k === void 0 ? void 0 : _k.attr("src")) !== null && _l !== void 0 ? _l : null;
                 if (prefix)
@@ -933,7 +976,9 @@ $(function () { return __awaiter(_this, void 0, void 0, function () {
                 return [4 /*yield*/, user_1.doUpdate()];
             case 1:
                 _m.sent();
-                setInterval(function () { user_1.doUpdate(); }, User.UPDATE_WAIT_TIME * 1000);
+                setInterval(function () {
+                    user_1.doUpdate();
+                }, User.UPDATE_WAIT_TIME * 1000);
                 _m.label = 2;
             case 2:
                 Script.inject();
