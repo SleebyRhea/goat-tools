@@ -9,8 +9,8 @@
 // @grant       GM.setValue
 // @grant       GM.getValue
 // @require     https://code.jquery.com/jquery-3.7.1.min.js
-// @downloadURL https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/goatlingstools.user.js
-// @updateURL   https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/goatlings-usability.js
+// @downloadURL https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/build/goatlingstools.user.js
+// @updateURL   https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/build/goatlingstools.user.js
 // @license     bsd-3-clause
 // @version     1.0.4
 // ==/UserScript==
