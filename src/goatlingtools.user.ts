@@ -8,7 +8,7 @@
 // @downloadURL https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/build/goatlingtools.user.js
 // @updateURL   https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/build/goatlingtools.user.js
 // @license     bsd-3-clause
-// @version     1.1.0
+// @version     1.1.1
 // ==/UserScript==
 
 // import * as $ from "jquery";
