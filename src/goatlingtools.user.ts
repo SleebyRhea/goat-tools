@@ -1498,12 +1498,27 @@ Mod.create("shoppingTweaks", (mod) => {
         justify-content: center;
         align-content: center;
         & div.shoparea {
+          border: 1px dashed;
+          border-color: %CLR_BACKGROUND;
+          max-width: 100px;
+          display: flex;
+          padding: 0;
+          margin: 0;
+          position: relative;
+          background: %CLR_BACKGROUND;
+          flex-direction: column;
+
           & img {
-            width: 95px;
+            width: 100px;
           }
         }
       }
     `);
+  };
+
+  mod.onActivate = async () => {
+    $(`div#wrapper > div#content > center > div.shoparea`).find("br").remove();
+    return true;
   };
 });
 

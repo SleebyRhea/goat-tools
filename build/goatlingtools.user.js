@@ -973,8 +973,14 @@ Style.add(/*css*/ "\n  /* Alters main content margins, and adds a border to bett
 Mod.create("shoppingTweaks", function (mod) {
     mod.runsOn = ["/ShoppingDistrict"];
     mod.onPreload = function () {
-        Style.add("\n      div#wrapper > div#content > center {\n        display: flex;\n        flex-wrap: wrap;\n        justify-content: center;\n        align-content: center;\n        & div.shoparea {\n          & img {\n            width: 95px;\n          }\n        }\n      }\n    ");
+        Style.add("\n      div#wrapper > div#content > center {\n        display: flex;\n        flex-wrap: wrap;\n        justify-content: center;\n        align-content: center;\n        & div.shoparea {\n          border: 1px dashed;\n          border-color: %CLR_BACKGROUND;\n          max-width: 100px;\n          display: flex;\n          padding: 0;\n          margin: 0;\n          position: relative;\n          background: %CLR_BACKGROUND;\n          flex-direction: column;\n\n          & img {\n            width: 100px;\n          }\n        }\n      }\n    ");
     };
+    mod.onActivate = function () { return __awaiter(_this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            $("div#wrapper > div#content > center > div.shoparea").find("br").remove();
+            return [2 /*return*/, true];
+        });
+    }); };
 });
 Style.load({
     background: "#FFFFFF",
