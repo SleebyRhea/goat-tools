@@ -150,20 +150,24 @@ class Logger {
       );
   }
 
-  logInfo(msg: any) {
-    return this.log(Logger.LOG_INFO, msg);
+  logInfo(...msg: any) {
+    return this.log(Logger.LOG_INFO, ...msg);
   }
-  logWarn(msg: any) {
-    return this.log(Logger.LOG_WARNING, msg);
+
+  logWarn(...msg: any) {
+    return this.log(Logger.LOG_WARNING, ...msg);
   }
-  logError(msg: any) {
-    return this.log(Logger.LOG_ERROR, msg);
+
+  logError(...msg: any) {
+    return this.log(Logger.LOG_ERROR, ...msg);
   }
-  logDebug(msg: any) {
-    return this.log(Logger.LOG_DEBUG, msg);
+
+  logDebug(...msg: any) {
+    return this.log(Logger.LOG_DEBUG, ...msg);
   }
-  logVerbose(msg: any) {
-    return this.log(Logger.LOG_VERBOSE, msg);
+
+  logVerbose(...msg: any) {
+    return this.log(Logger.LOG_VERBOSE, ...msg);
   }
 
   static LOG_ERROR: number = 0;
