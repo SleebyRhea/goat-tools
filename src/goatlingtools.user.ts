@@ -17,6 +17,11 @@ type ResourceMap = {
   [key: string]: { [key: string]: string };
 };
 
+type Tab = {
+  name: string,
+  id: number,
+};
+
 type Goat = {
   portait: string;
   name: string;
