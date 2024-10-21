@@ -1570,9 +1570,9 @@ $(async () => {
       userinfo_link.text()
     );
 
+    user.csrf = csrf;
     user.sugarstars = parseSepInt(currency[2] ?? "0");
     user.daimonddust = parseSepInt(currency[1] ?? "0");
-    user.csrf = csrf;
 
     // Parse out the active goatling from the DOM, if present
     user.active =
