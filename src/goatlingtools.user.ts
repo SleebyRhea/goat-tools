@@ -1557,6 +1557,12 @@ $(async () => {
       $("div#user-info-points")?.text()?.replace(/[\s]+/g, ";").split(";") ??
       [];
 
+    /**
+     * At the time of this writing, Goatlings has a link to the users profile
+     * at XPath 'div#user-info > span > a', and that same element also conveniently
+     * stores the username. Parse the <a> tag for the profile UID, and the text
+     * for the username
+     * */
     const user = new User(
       getUri(userinfo_link.attr("href"))
         .replace("/profile/u/", "")
