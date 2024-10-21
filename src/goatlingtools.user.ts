@@ -373,6 +373,7 @@ class User extends Logger {
 
   private __goatlings: { [key: string]: Goat };
 
+  tabs: Tab[] = [];
   name: string;
   csrf: string;
   uuid: string;
