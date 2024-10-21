@@ -1439,24 +1439,31 @@ Mod.create("inventoryTools", (mod) => {
     });
 
     $("div.header-option > img#toggle-stack").on("click", () => {
+      mod.logDebug("Toggling stacks!");
       Settings.set("itemsStacked", Settings.get("itemsStacked") ? false : true);
+
+      // Preserve what inventory we're viewing
       const trailing = /^\/inventory\/index\/[0-9](.+)$/.exec(uri)?.[1];
 
-      console.log("Toggling stacks!");
       if (trailing) {
         mod.logDebug(
+          "Before:",
           `/inventory/index/${Settings.get("itemsStacked") ? 2 : 1}${trailing}`
         );
+
         window.location.href = `/inventory/index/${
           Settings.get("itemsStacked") ? 2 : 1
         }${trailing}`;
+
         return;
       }
 
-      mod.logDebug(`/inventory/index/${Settings.get("itemsStacked") ? 2 : 1}`);
-      window.location.href = `/inventory/index/${
-        Settings.get("itemsStacked") ? 2 : 1
-      }`;
+      mod.logDebug(
+        "After:",
+        `/inventory/index/${Settings.get("itemsStacked") ? 2 : 1}`
+      );
+
+      window.location.href = `/inventory/index/${Settings.get("itemsStacked") ? 2 : 1}`;
     });
 
     return true;
