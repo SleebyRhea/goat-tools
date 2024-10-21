@@ -184,8 +184,8 @@ class Script {
         .prop("type", "text/javascript")
         .html(
           `
-          const ${s}Actual = ${this.allScripts[s]}
-          const ${s} = (...args) => {
+          var ${s}Actual = ${this.allScripts[s]}
+          var ${s} = (...args) => {
             try {
               return ${s}Actual(...args)
             }
@@ -706,6 +706,44 @@ Mod.create("sidebarOverhaul", async (mod) => {
   };
 });
 
+Mod.create("pageUpdates", (mod) => {
+  mod.runsOn = ["/mypets", "/battle/over", "/inventory/view_action"];
+  mod.onActivate = async () => {
+    let doUpdate = false;
+    const uri = getUri();
+
+    switch (true) {
+      case uri == "/mypets": {
+        doUpdate = true;
+        break;
+      }
+      case uri.startsWith("/battle/over"): {
+        if (/The battle is over/.test($("div#content").text())) doUpdate = true;
+        break;
+      }
+      case uri.startsWith("/inventory/view_action"): {
+        $("div#content").each((_, e) => {
+          if (doUpdate) return;
+          let text = $(e).text();
+          if (
+            /Their [^\s]+ increased by/.test(text) ||
+            /has their hp healed/.test(text) ||
+            /Mood ([+-][\d]+)/.test(text)
+          )
+            doUpdate = true;
+        });
+        break;
+      }
+      default: {
+        return false;
+      }
+    }
+
+    mod.user?.updateGoatlings();
+    return true;
+  };
+});
+
 Mod.create("quickbar", (mod) => {
   mod.onPreload = () => {
     Style.add(/*css*/ `
@@ -991,44 +1029,6 @@ Mod.create("petHeader", (mod) => {
           "accent"
         )} ${ratio}%, ${Style.get("background")} ${ratio}%)"></div>
       `);
-    return true;
-  };
-});
-
-Mod.create("pageUpdates", (mod) => {
-  mod.runsOn = ["/mypets", "/battle/over", "/inventory/view_action"];
-  mod.onActivate = async () => {
-    let doUpdate = false;
-    const uri = getUri();
-
-    switch (true) {
-      case uri == "/mypets": {
-        doUpdate = true;
-        break;
-      }
-      case uri.startsWith("/battle/over"): {
-        if (/The battle is over/.test($("div#content").text())) doUpdate = true;
-        break;
-      }
-      case uri.startsWith("/inventory/view_action"): {
-        $("div#content").each((_, e) => {
-          if (doUpdate) return;
-          let text = $(e).text();
-          if (
-            /Their [^\s]+ increased by/.test(text) ||
-            /has their hp healed/.test(text) ||
-            /Mood ([+-][\d]+)/.test(text)
-          )
-            doUpdate = true;
-        });
-        break;
-      }
-      default: {
-        return false;
-      }
-    }
-
-    mod.user?.updateGoatlings();
     return true;
   };
 });
