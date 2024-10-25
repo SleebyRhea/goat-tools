@@ -1744,7 +1744,7 @@ $(async () => {
      * at XPath 'div#user-info > span > a', and that same element also conveniently
      * stores the username. Parse the <a> tag for the profile UID, and the text
      * for the username
-     * */
+     */
     const user = new User(
       getUri(userinfo_link.attr("href"))
         .replace("/profile/u/", "")
