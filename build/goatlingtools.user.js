@@ -8,7 +8,7 @@
 // @downloadURL https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/build/goatlingtools.user.js
 // @updateURL   https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/build/goatlingtools.user.js
 // @license     bsd-3-clause
-// @version     1.1.1
+// @version     1.2.0
 // ==/UserScript==
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -46,8 +46,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
@@ -118,11 +118,17 @@ RES.image.save =
         "NpzPrUMPJ2MFK76iYclsLomdj3RKha6q2Fg0i/0hvuBwWOtBOM+EtFfMJhQI3jMz7aZH2WF3Yf++y+d8BDJ4YnU/XFMEWh0SjY6PKQARACH5BAUKAA" +
         "AALAAAAAAUABQAgwAAACIgNB5QPDeUbltu4WOb/4+Pj8DAwP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAARqUEhzqr1GgA3EGNRVBcFhDNrmgeJYnqj6" +
         "hSJpfulKXzacz61DDydjBSu+omHJbC6JnY90SoWuqthYNDsleH+IsHgcJhQIYGfTa2ZHyWRzYX5+q9d0ggwOb6fva1oefHyCXFgpHRKLjI2JEQA7";
+/**
+ * Stacked items icon
+*/
 RES.image.stacked =
     "data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAANlJREFUSIl" +
         "jZEACaZaG/xmoBGYdP8/IwMDAwIJu+OMPn6llBwOKBciGb7uyniJDGZl1GbFawMDAwNCyqInh3LnLZBtubBrFiMzHsMDISJdswxkYGBj+/738H68Pv" +
         "HQCGVoWNZFtAboP4BxqR/L263cYUSxAtoQaAJZMMXxATcNRLPDUVKGKBbICvCiWoATR/7+XKbLESycQbglWCxgYGBjOnl5GkSU1cXUoFqAkU0p9gA2" +
         "gWMDIrMtIiQ9q4uowxGgeySzoEtQAWJMpA8NofYAAo/UBXjD86gMAmXlwBoegD/UAAAAASUVORK5CYII=";
+/**
+ * Unstacked items icon
+*/
 RES.image.unstacked =
     "data:image/gif;base64, iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAAAXNSR0IArs4c6QAAAUpJREFUS" +
         "IntlT1ug0AQhWdtt0hcgC5NJCigQ/IFQscFXOIuh7Dc5QR2SZHWnXOBSC4srwsspUnHBZCoo0310ODsxPwocpOvWRh239vZn4Hon3ujsjg0ZVXT28e" +
@@ -183,20 +189,40 @@ var Logger = /** @class */ (function () {
         if (level <= loglevel)
             console.log.apply(console, __spreadArray(["[GoatTools:".concat(_b.LOG_REPR[level], "] ").concat(this.__repr(), " ")], msg, false));
     };
-    Logger.prototype.logInfo = function (msg) {
-        return this.log(_b.LOG_INFO, msg);
+    Logger.prototype.logInfo = function () {
+        var msg = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            msg[_i] = arguments[_i];
+        }
+        return this.log.apply(this, __spreadArray([_b.LOG_INFO], msg, false));
     };
-    Logger.prototype.logWarn = function (msg) {
-        return this.log(_b.LOG_WARNING, msg);
+    Logger.prototype.logWarn = function () {
+        var msg = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            msg[_i] = arguments[_i];
+        }
+        return this.log.apply(this, __spreadArray([_b.LOG_WARNING], msg, false));
     };
-    Logger.prototype.logError = function (msg) {
-        return this.log(_b.LOG_ERROR, msg);
+    Logger.prototype.logError = function () {
+        var msg = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            msg[_i] = arguments[_i];
+        }
+        return this.log.apply(this, __spreadArray([_b.LOG_ERROR], msg, false));
     };
-    Logger.prototype.logDebug = function (msg) {
-        return this.log(_b.LOG_DEBUG, msg);
+    Logger.prototype.logDebug = function () {
+        var msg = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            msg[_i] = arguments[_i];
+        }
+        return this.log.apply(this, __spreadArray([_b.LOG_DEBUG], msg, false));
     };
-    Logger.prototype.logVerbose = function (msg) {
-        return this.log(_b.LOG_VERBOSE, msg);
+    Logger.prototype.logVerbose = function () {
+        var msg = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            msg[_i] = arguments[_i];
+        }
+        return this.log.apply(this, __spreadArray([_b.LOG_VERBOSE], msg, false));
     };
     var _b;
     _b = Logger;
@@ -217,16 +243,27 @@ var Logger = /** @class */ (function () {
 var Script = /** @class */ (function () {
     function Script() {
     }
+    /**
+     * Adds a function to list of functions that will be injected into the DOM
+     * @param name Name of function to be injected
+     * @param fn Function to be injected
+     */
     Script.add = function (name, fn) {
         if (this.allScripts[name])
             return;
         this.allScripts[name] = fn.toString();
     };
+    /**
+     * Injects functions added by Script.add to the pages DOM
+     *
+     * This method is used to enable an easier method for using functions
+     * by injected HTML elements.
+     */
     Script.inject = function () {
         for (var s in this.allScripts) {
             $("<script>")
                 .prop("type", "text/javascript")
-                .html("\n          const ".concat(s, "Actual = ").concat(this.allScripts[s], "\n          const ").concat(s, " = (...args) => {\n            try {\n              return ").concat(s, "Actual(...args)\n            }\n\n            catch (e) {\n              console.log(e)\n            }\n\n            return false\n          }\n        "))
+                .html("\n          var ".concat(s, "Actual = ").concat(this.allScripts[s], "\n          var ").concat(s, " = (...args) => {\n            try {\n              return ").concat(s, "Actual(...args)\n            }\n\n            catch (e) {\n              console.log(e)\n            }\n\n            return false\n          }\n        "))
                 .appendTo("head");
         }
     };
@@ -236,6 +273,10 @@ var Script = /** @class */ (function () {
 var Style = /** @class */ (function () {
     function Style() {
     }
+    /**
+     * Add a CSS sheet to be injected into the DOM when inject is called
+     * @param css
+     */
     Style.add = function (css) {
         this.allStyles.push(css.replaceAll(/(?:\r\n|\r|\n)/g, " "));
     };
@@ -243,6 +284,11 @@ var Style = /** @class */ (function () {
         var _a;
         return (_a = this.settings[property]) !== null && _a !== void 0 ? _a : "black";
     };
+    /**
+     * Load style settings from localstorage and a given object; with the settings
+     * in localstorage taking priority
+     * @param defaultSet
+     */
     Style.load = function (defaultSet) {
         var _a, _c;
         if (defaultSet === void 0) { defaultSet = {}; }
@@ -253,6 +299,9 @@ var Style = /** @class */ (function () {
         }
         localStorage.setItem("gt_style", JSON.stringify(this.settings));
     };
+    /**
+     * Inject loaded styles into the DOMs <head> element
+     */
     Style.inject = function () {
         $("<style>")
             .prop("type", "text/css")
@@ -336,7 +385,6 @@ var gtUpdateSetting = function (key, value) {
         return false;
     }
     var didUpdate = false;
-    // console.log(`[GoatTools:DEBUG] Style[] Setting ${key} value to ${value}`);
     var setting = JSON.parse((_a = localStorage.getItem("gt_settings")) !== null && _a !== void 0 ? _a : "{}");
     if (setting[key] != value) {
         didUpdate = true;
@@ -358,15 +406,9 @@ var gtUpdateSetting = function (key, value) {
  */
 var gtUpdateStyle = function (key, value) {
     var _a;
-    if (["background", "accent", "primary"].indexOf(key) < 0) {
-        // TODO setup static loggign
-        // console.log(
-        //   "[GoatTools:WARN ] Style[] Attempt to save invalid key to styles"
-        // );
+    if (["background", "accent", "primary"].indexOf(key) < 0)
         return false;
-    }
     var didUpdate = false;
-    // console.log(`[GoatTools:DEBUG] Style[] Setting ${key} value to ${value}`);
     var style = JSON.parse((_a = localStorage.getItem("gt_style")) !== null && _a !== void 0 ? _a : "{}");
     if (style[key] != value) {
         didUpdate = true;
@@ -386,19 +428,25 @@ var gtUpdateStyle = function (key, value) {
 var User = /** @class */ (function (_super) {
     __extends(User, _super);
     function User(uuid, name) {
+        var _a, _c;
         var _this = _super.call(this, function () {
             return _this.name ? "User[".concat(String(_this.name), "]") : "User[GuestUser]";
         }) || this;
         _this.uuid = uuid;
         _this.name = name;
+        _this.__tabs = JSON.parse((_a = localStorage.getItem("".concat(_this.uuid, "_tabs"))) !== null && _a !== void 0 ? _a : "[]");
+        _this.__goatlings = JSON.parse((_c = localStorage.getItem("".concat(_this.uuid, "_goatlings"))) !== null && _c !== void 0 ? _c : "{}");
         return _this;
     }
     User.prototype.fetchGoatlings = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var _a;
-            return __generator(this, function (_c) {
+            var _a, _c;
+            return __generator(this, function (_d) {
+                if (!this.__tabs) {
+                    this.__tabs = JSON.parse((_a = localStorage.getItem("".concat(this.uuid, "_tabs"))) !== null && _a !== void 0 ? _a : "[]");
+                }
                 if (!this.__goatlings) {
-                    this.__goatlings = JSON.parse((_a = localStorage.getItem("".concat(this.uuid, "_goatlings"))) !== null && _a !== void 0 ? _a : "{}");
+                    this.__goatlings = JSON.parse((_c = localStorage.getItem("".concat(this.uuid, "_goatlings"))) !== null && _c !== void 0 ? _c : "{}");
                 }
                 return [2 /*return*/, this.__goatlings];
             });
@@ -415,75 +463,143 @@ var User = /** @class */ (function (_super) {
     };
     /**
      * Parse goatling objects from the given JQuery object
-     * @param obj
+     * @param mystuff div.mystuff objects retrieved from JQuery
      */
-    User.prototype.updateGoatlingsActual = function (obj) {
+    User.prototype.updateGoatlingsActual = function (mystuff) {
+        var _this = this;
         var goatlings = {};
-        var view_re = /^\/mypets\/view\/([\d]+)\/?/;
-        $(obj).each(function (_, e) {
+        var name_re = /^\/mypets\/change_name\/([\d]+)\/?/;
+        $(mystuff).each(function (_, e) {
             var _a;
             var pet_id = "";
             var goat_def = (_a = $(e).text()) === null || _a === void 0 ? void 0 : _a.replace(/[\s]+/g, ";").split(";");
             goat_def.shift();
             goat_def.pop();
+            if (goat_def.length <= 4)
+                return;
+            _this.logDebug("On goat:", goat_def);
             $(e)
-                .find("a")
+                .find("ul > li > a")
                 .each(function (_, a) {
-                var _a;
+                var _a, _c;
                 if (pet_id != "")
                     return;
                 var goto = getUri($(a).attr("href"));
                 if (goto == "")
                     return;
-                if (!view_re.test(goto))
-                    return;
-                pet_id = String((_a = view_re.exec(goto)) === null || _a === void 0 ? void 0 : _a[1]);
+                pet_id = (_c = (_a = name_re.exec(goto)) === null || _a === void 0 ? void 0 : _a[1]) !== null && _c !== void 0 ? _c : "";
             });
             // HP and EXP are presented as "current/max"
-            var hp = goat_def[6].split("/");
-            var exp = goat_def[4].split("/");
+            var hp = goat_def[13].split("/");
+            var exp = goat_def[11].split("/");
             var goat = {
                 id: pet_id,
                 name: goat_def[0],
                 portait: getUri($(e).find("img").attr("src")),
-                level: parseSepInt(goat_def[2]),
+                level: parseSepInt(goat_def[9]),
                 current_exp: parseSepInt(exp[0]),
                 max_exp: parseSepInt(exp[1]),
                 current_hp: parseSepInt(hp[0]),
                 max_hp: parseSepInt(hp[1]),
-                str: parseSepInt(goat_def[8]),
-                def: parseSepInt(goat_def[10]),
-                int: parseSepInt(goat_def[12]),
-                spd: parseSepInt(goat_def[14]),
-                hunger: parseSepInt(goat_def[16].split("/")[0]),
-                mood: parseSepInt(goat_def[18].split("/")[0]),
-                wins: parseSepInt(goat_def[20]),
-                losses: parseSepInt(goat_def[22]),
+                str: parseSepInt(goat_def[15]),
+                def: parseSepInt(goat_def[17]),
+                int: parseSepInt(goat_def[19]),
+                spd: parseSepInt(goat_def[21]),
+                hunger: parseSepInt(goat_def[23].split("/")[0]),
+                mood: parseSepInt(goat_def[25].split("/")[0]),
+                wins: parseSepInt(goat_def[27]),
+                losses: parseSepInt(goat_def[29]),
             };
+            console.log("Goat:", goat);
             goatlings[goat.name] = goat;
         });
         return goatlings;
     };
+    User.prototype.updateGoatlingTabsActual = function (tabs) {
+        var _this = this;
+        this.__tabs = [];
+        $(tabs).find("div.pv-cat > p > a").each(function (_, e) {
+            var _a, _c;
+            // If there's an img present, then the name is not present
+            if ($(e).find("img").length > 0)
+                return;
+            // Parse the Tab ID from the link URL
+            var uri = getUri($(e).attr("href"));
+            var found = (_a = /\/manage\/(\d+)/.exec(uri)) !== null && _a !== void 0 ? _a : [];
+            var tid = parseInt((_c = found[1]) !== null && _c !== void 0 ? _c : "");
+            // Filter out non-tab URLs
+            if (!found[1] || Number.isNaN(tid))
+                return;
+            var tab = {
+                id: tid,
+                name: $(e).text()
+            };
+            _this.__tabs.push(tab);
+        });
+    };
     /**
-     * Fetch and update the goatlings data with the latest information from /mypets
+     *
      */
-    User.prototype.updateGoatlings = function () {
+    User.prototype.updateGoatlingTabs = function () {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
-                this.logInfo("Updating goatlings ...");
-                if (getUri() == "/mypets") {
-                    this.__goatlings = this.updateGoatlingsActual($("div.mypets-pet"));
-                    localStorage.setItem("".concat(this.uuid, "_goatlings"), JSON.stringify(this.__goatlings));
-                    this.logDebug("updateGoatlings() Finished update");
+                this.logInfo("Updating goatling tabs ...");
+                if (getUri() == "/MyGoatlings") {
+                    this.updateGoatlingTabsActual($("div#wrapper > div#content > form"));
+                    this.logDebug("updateGoatlingTabs() Finished update");
+                    localStorage.setItem("".concat(this.uuid, "_tabs"), JSON.stringify(this.__tabs));
+                    return [2 /*return*/];
                 }
-                else {
-                    this.logDebug("Fetching pet data from /mypets ...");
+                $.ajax({
+                    url: "".concat(PAGE, "/MyGoatlings"),
+                    async: true,
+                    success: function (data) {
+                        _this.updateGoatlingTabsActual($(data).find("div"));
+                        _this.logDebug("updateGoatlingTabs() Finished update");
+                        localStorage.setItem("".concat(_this.uuid, "_tabs"), JSON.stringify(_this.__tabs));
+                    },
+                });
+                return [2 /*return*/];
+            });
+        });
+    };
+    /**
+     * Update a users registered Goatlings
+     * @param skipTabs Skip updating tabs when updating goatlings
+     * @param whichTab Update goatlings from a specific tab
+     */
+    User.prototype.updateGoatlings = function () {
+        return __awaiter(this, arguments, void 0, function (skipTabs, whichTab) {
+            var tabJobs, _i, tabJobs_1, tab;
+            var _this = this;
+            if (skipTabs === void 0) { skipTabs = false; }
+            if (whichTab === void 0) { whichTab = -1; }
+            return __generator(this, function (_a) {
+                if (!skipTabs)
+                    this.updateGoatlingTabs();
+                this.logDebug(this);
+                if (typeof this.__tabs === "undefined")
+                    this.updateGoatlingTabs();
+                tabJobs = this.__tabs;
+                if (whichTab > -1) {
+                    tabJobs = this.__tabs.filter(function (t) { return t.id === whichTab; });
+                }
+                this.logDebug("Fetching goatlings from tabs:", tabJobs, this.__tabs);
+                this.logInfo("Updating goatlings ...");
+                for (_i = 0, tabJobs_1 = tabJobs; _i < tabJobs_1.length; _i++) {
+                    tab = tabJobs_1[_i];
+                    if (getUri() == "/MyGoatlings/manage/".concat(tab.id)) {
+                        this.__goatlings = __assign(__assign({}, this.updateGoatlingsActual($("div.mystuff"))), this.__goatlings);
+                        localStorage.setItem("".concat(this.uuid, "_goatlings"), JSON.stringify(this.__goatlings));
+                        this.logDebug("updateGoatlings() Finished update");
+                        return [2 /*return*/];
+                    }
                     $.ajax({
-                        url: "".concat(PAGE, "/mypets"),
+                        url: "".concat(PAGE, "/MyGoatlings/manage/").concat(tab.id),
                         async: true,
                         success: function (data) {
-                            _this.__goatlings = _this.updateGoatlingsActual($(data).find("div.mypets-pet"));
+                            _this.__goatlings = __assign(__assign({}, _this.updateGoatlingsActual($(data).find("div.mystuff"))), _this.__goatlings);
                             localStorage.setItem("".concat(_this.uuid, "_goatlings"), JSON.stringify(_this.__goatlings));
                             _this.logDebug("updateGoatlings() Finished update");
                         },
@@ -538,6 +654,7 @@ var Mod = /** @class */ (function (_super) {
             return "Mod[".concat(name, "]");
         }) || this;
         _this.name = "";
+        /**Acceptable URIs - or URI matches - that this may run on */
         _this.runsOn = [];
         _this.name = name;
         _this.enabled = true;
@@ -558,6 +675,12 @@ var Mod = /** @class */ (function (_super) {
         enumerable: false,
         configurable: true
     });
+    /**
+     * Activates the main body of the mod
+     *
+     * Only permits running the mod if it's enable and the current page is one that
+     * this mod is permitted to run on
+     */
     Mod.prototype.activate = function () {
         return __awaiter(this, void 0, void 0, function () {
             var pageUri, canRun, _i, _a, uri;
@@ -706,6 +829,61 @@ Mod.create("sidebarOverhaul", function (mod) { return __awaiter(_this, void 0, v
         return [2 /*return*/];
     });
 }); });
+Mod.create("pageUpdates", function (mod) {
+    mod.runsOn = [
+        "/MyGoatlings",
+        "/MyGoatlings/manage",
+        "/battle/over",
+        "/inventory/view_action",
+    ];
+    mod.onActivate = function () { return __awaiter(_this, void 0, void 0, function () {
+        var doUpdate, uri, skipTabs, whichTab;
+        var _a, _c, _d, _e;
+        return __generator(this, function (_f) {
+            doUpdate = false;
+            uri = getUri();
+            skipTabs = false;
+            whichTab = -1;
+            switch (true) {
+                case uri.startsWith("/MyGoatlings/manage"): {
+                    whichTab = parseInt((_c = (_a = /^\/MyGoatlings\/manage\/([0-9]+)/.exec(uri)) === null || _a === void 0 ? void 0 : _a[1]) !== null && _c !== void 0 ? _c : "-1");
+                    if (whichTab > -1) {
+                        skipTabs = true;
+                        doUpdate = true;
+                    }
+                    break;
+                }
+                case uri == "/MyGoatlings": {
+                    (_d = mod.user) === null || _d === void 0 ? void 0 : _d.updateGoatlingTabs();
+                    break;
+                }
+                case uri.startsWith("/battle/over"): {
+                    if (/The battle is over/.test($("div#content").text()))
+                        doUpdate = true;
+                    break;
+                }
+                case uri.startsWith("/inventory/view_action"): {
+                    $("div#content").each(function (_, e) {
+                        if (doUpdate)
+                            return;
+                        var text = $(e).text();
+                        if (/Their [^\s]+ increased by/.test(text) ||
+                            /has their hp healed/.test(text) ||
+                            /Mood ([+-][\d]+)/.test(text))
+                            doUpdate = true;
+                    });
+                    break;
+                }
+                default: {
+                    return [2 /*return*/, false];
+                }
+            }
+            if (doUpdate)
+                (_e = mod.user) === null || _e === void 0 ? void 0 : _e.updateGoatlings(skipTabs, whichTab);
+            return [2 /*return*/, true];
+        });
+    }); };
+});
 Mod.create("quickbar", function (mod) {
     mod.onPreload = function () {
         Style.add(/*css*/ "\n      #gt-quickbar {\n        margin: 5px;\n        padding: 5px;\n        border-radius: 4px 4px 4px 4px;\n        border: 1px solid %CLR_PRIMARY;\n        position: relative;\n        width: 771px;\n        float: right;\n        background: linear-gradient(to bottom, %CLR_PRIMARY 23%, %CLR_BACKGROUND 23%);\n  \n        & b {\n          color: %CLR_PRIMARY;\n        }\n      \n        & hr {\n          height: 1px;\n          border: 0px;\n          background-color: %CLR_PRIMARY;\n        }\n      \n        & div.shoparea>a>img {\n          height: 50px;\n        }\n      \n        & div.sep {\n          border-left: 1px solid %CLR_PRIMARY;\n          padding-left: 15px;\n        }\n      \n        & div.rsep {\n          border-right: 1px solid %CLR_PRIMARY;\n          padding-right: 15px;\n        }\n      \n        & span.newevent {\n          border-left: 1px solid %CLR_BACKGROUND;\n          padding-left: 5px;\n          & a:link, a:visited, a:hover, a:active {\n            color: %CLR_BACKGROUND;\n          }\n        }\n  \n        & div.linkmenu {\n          display: inline-block;\n          vertical-align: top;\n          margin: 5px;\n          font-size: 1em;\n          line-height: 1.1;\n  \n          & a:link, a:visited {\n            color: %CLR_PRIMARY;\n          }\n  \n          & a:hover, a:active {\n            color: %CLR_ACCENT;\n          }\n        }\n  \n        & span.goattime {\n          font-weight: bold;\n          color: %CLR_BACKGROUND;\n  \n          & a:link, a:visited, a:hover, a:active {\n            color: %CLR_BACKGROUND;\n          }\n        }\n  \n        & div.user-info {\n          justify-content: middle;\n          float: right;\n          position: absolute;\n          font-weight: bold;\n          color: %CLR_BACKGROUND;\n      \n          margin: 5px;\n          top: 0;\n          right: 0;\n      \n          & img {\n            width: 12px;\n          }\n  \n          & .sep {\n            border-left: 1px solid %CLR_BACKGROUND;\n            padding-left: 5px;\n          }\n        \n          & .rsep {\n            border-right: 1px solid %CLR_BACKGROUND;\n            padding-right: 5px;\n          }\n  \n          & a:link, a:visited, a:hover, a:active {\n            color: %CLR_BACKGROUND;\n          }\n        }\n      }\n  \n      #gt-quickbar.loggedout {\n        background: %CLR_PRIMARY;\n        height: 1.2em;\n        & div, hr {\n          display: none;\n        }\n      }\n    ");
@@ -777,7 +955,7 @@ Mod.create("petHeader", function (mod) {
                     ratio = (active.current_exp / active.max_exp) * 100;
                     hp = "".concat(active.current_hp, "/").concat(active.max_hp);
                     $("div#header > div#active_pet_image > img")
-                        .wrap("<a href=\"/mypets\"></a>")
+                        .wrap("<a href=\"/MyGoatlings\"></a>")
                         .parent()
                         .parent().after("\n        <div class=\"active_pet_stats\">\n          <div class=\"stat-header\">Level:  <span>".concat(active.level, "</span><br></div>\n          <b>Hp</b>:     <span class=\"").concat(getStatClass(active.current_hp, active.max_hp), "\">").concat(hp, "</span><br>\n          <b>Hunger</b>: <span class=\"").concat(getStatClass(active.hunger), "\">").concat(active.hunger, "/100</span><br>\n          <b>Mood</b>:   <span class=\"").concat(getStatClass(active.mood), "\">").concat(active.mood, "/100</span><br><hr>\n          <b>Wins</b>:   <span >").concat(active.wins, "</span><br>\n          <b>Loss</b>:   <span >").concat(active.losses, "</span><br>\n        </div>\n        <div class=\"active_exp_bar\" style=\"background: linear-gradient(to right, ").concat(Style.get("accent"), " ").concat(ratio, "%, ").concat(Style.get("background"), " ").concat(ratio, "%)\"></div>\n      "));
                     return [2 /*return*/, true];
@@ -785,48 +963,9 @@ Mod.create("petHeader", function (mod) {
         });
     }); };
 });
-Mod.create("pageUpdates", function (mod) {
-    mod.runsOn = ["/mypets", "/battle/over", "/inventory/view_action"];
-    mod.onActivate = function () { return __awaiter(_this, void 0, void 0, function () {
-        var doUpdate, uri;
-        var _a;
-        return __generator(this, function (_c) {
-            doUpdate = false;
-            uri = getUri();
-            switch (true) {
-                case uri == "/mypets": {
-                    doUpdate = true;
-                    break;
-                }
-                case uri.startsWith("/battle/over"): {
-                    if (/The battle is over/.test($("div#content").text()))
-                        doUpdate = true;
-                    break;
-                }
-                case uri.startsWith("/inventory/view_action"): {
-                    $("div#content").each(function (_, e) {
-                        if (doUpdate)
-                            return;
-                        var text = $(e).text();
-                        if (/Their [^\s]+ increased by/.test(text) ||
-                            /has their hp healed/.test(text) ||
-                            /Mood ([+-][\d]+)/.test(text))
-                            doUpdate = true;
-                    });
-                    break;
-                }
-                default: {
-                    return [2 /*return*/, false];
-                }
-            }
-            (_a = mod.user) === null || _a === void 0 ? void 0 : _a.updateGoatlings();
-            return [2 /*return*/, true];
-        });
-    }); };
-});
 Mod.create("settingsPage", function (mod) {
     mod.runsOn = ["/settings"];
-    mod.enabled = true;
+    mod.enabled = false;
     mod.onPreload = function () {
         Style.add(/*css*/ "\n      #content.gt-settings-container {  \n        & .hidden {\n          display: none;\n        }\n  \n        & .gt-settings > span {\n          float: right;\n        }\n  \n        & #gt-tools-settings {\n          & input.submit {\n            position: absolute;\n            right: 0;\n            margin: 5;\n            top: -27;\n          }\n\n          & table {\n            border-collapse: separate;\n            display: inline-block;\n          }\n\n          & table#gt-style-settings {\n            float: left;\n          }\n\n          & table#gt-mods-enabled {\n            float: right;\n          }\n  \n          & table > tbody > tr > td:nth-child(1) {\n            padding: 5px;\n            border-radius: 4px 0px 0px 4px;\n          }\n  \n          & table > tbody > tr > td:nth-last-child(1) {\n            padding: 5px;\n            border-radius: 0px 4px 4px 0px;\n          }\n  \n          & table {\n            border-collapse: separate;\n            border-spacing: 0px 5px;\n  \n            & tbody {\n              color: %CLR_BACKGROUND;\n              background: %CLR_PRIMARY;\n            }\n          }\n        }\n      }\n    ");
     };
@@ -954,15 +1093,16 @@ Mod.create("inventoryTools", function (mod) {
             });
             $("div.header-option > img#toggle-stack").on("click", function () {
                 var _a;
+                mod.logDebug("Toggling stacks!");
                 Settings.set("itemsStacked", Settings.get("itemsStacked") ? false : true);
+                // Preserve what inventory we're viewing
                 var trailing = (_a = /^\/inventory\/index\/[0-9](.+)$/.exec(uri)) === null || _a === void 0 ? void 0 : _a[1];
-                console.log("Toggling stacks!");
                 if (trailing) {
-                    mod.logDebug("/inventory/index/".concat(Settings.get("itemsStacked") ? 2 : 1).concat(trailing));
+                    mod.logDebug("Before:", "/inventory/index/".concat(Settings.get("itemsStacked") ? 2 : 1).concat(trailing));
                     window.location.href = "/inventory/index/".concat(Settings.get("itemsStacked") ? 2 : 1).concat(trailing);
                     return;
                 }
-                mod.logDebug("/inventory/index/".concat(Settings.get("itemsStacked") ? 2 : 1));
+                mod.logDebug("After:", "/inventory/index/".concat(Settings.get("itemsStacked") ? 2 : 1));
                 window.location.href = "/inventory/index/".concat(Settings.get("itemsStacked") ? 2 : 1);
             });
             return [2 /*return*/, true];
@@ -1019,9 +1159,9 @@ $(function () { return __awaiter(_this, void 0, void 0, function () {
                 user_1 = new User(getUri(userinfo_link.attr("href"))
                     .replace("/profile/u/", "")
                     .replace("/", ""), userinfo_link.text());
+                user_1.csrf = csrf;
                 user_1.sugarstars = parseSepInt((_e = currency[2]) !== null && _e !== void 0 ? _e : "0");
                 user_1.daimonddust = parseSepInt((_f = currency[1]) !== null && _f !== void 0 ? _f : "0");
-                user_1.csrf = csrf;
                 // Parse out the active goatling from the DOM, if present
                 user_1.active =
                     (_j = (_h = (_g = /Welcome\s+[^\s]+\s+-\s+Your\s+active\s+Goatling\s+is\s+([^\s]+)/) === null || _g === void 0 ? void 0 : _g.exec($("div#user-info").text())) === null || _h === void 0 ? void 0 : _h[1]) !== null && _j !== void 0 ? _j : null;

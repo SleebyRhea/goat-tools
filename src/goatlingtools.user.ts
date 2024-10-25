@@ -8,10 +8,26 @@
 // @downloadURL https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/build/goatlingtools.user.js
 // @updateURL   https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/build/goatlingtools.user.js
 // @license     bsd-3-clause
-// @version     1.1.1
+// @version     1.2.0
 // ==/UserScript==
 
+/**
+ * Change Log
+ *  v1.2.0
+ *    Update User with the ability to parse goatling tabs
+ *      - Added updateGoatlingTabs and updateGoatlingTabsActual
+ *      - Tabs are now saved in localstorage and loaded on startup
+ *      - updateGoatlings by default runs updateGoatlingTabs
+ *      - updateGoatlings now takes optional arguments:
+ *        * skipTabs: skip updating goatling tabs, unless necessary
+ *        * whichTab: select which goatling tab to update
+ *    Fix updateGoatlingsActual to work with recent changes to /mypets
+ *    Added some more documentation comments
+ */
+
 // import * as $ from "jquery";
+
+type ValidSetting = string | boolean | number;
 
 type ResourceMap = {
   [key: string]: { [key: string]: string };
@@ -188,11 +204,22 @@ class Logger {
 class Script {
   private static allScripts: { [key: string]: string } = {};
 
+  /**
+   * Adds a function to list of functions that will be injected into the DOM
+   * @param name Name of function to be injected
+   * @param fn Function to be injected
+   */
   static add(name: string, fn: (...args: any[]) => any) {
     if (this.allScripts[name]) return;
     this.allScripts[name] = fn.toString();
   }
 
+  /**
+   * Injects functions added by Script.add to the pages DOM
+   * 
+   * This method is used to enable an easier method for using functions
+   * by injected HTML elements. 
+   */
   static inject() {
     for (const s in this.allScripts) {
       $("<script>")
@@ -228,6 +255,10 @@ class Style {
     accent: "grey",
   };
 
+  /**
+   * Add a CSS sheet to be injected into the DOM when inject is called
+   * @param css 
+   */
   static add(css: string) {
     this.allStyles.push(css.replaceAll(/(?:\r\n|\r|\n)/g, " "));
   }
@@ -236,6 +267,11 @@ class Style {
     return this.settings[property] ?? "black";
   }
 
+  /**
+   * Load style settings from localstorage and a given object; with the settings
+   * in localstorage taking priority
+   * @param defaultSet 
+   */
   static load(defaultSet: { [key: string]: string } = {}) {
     const loadedStyle = JSON.parse(localStorage.getItem(`gt_style`) ?? "{}");
     const wantedStyle = { ...defaultSet, ...loadedStyle };
@@ -247,6 +283,9 @@ class Style {
     localStorage.setItem("gt_style", JSON.stringify(this.settings));
   }
 
+  /**
+   * Inject loaded styles into the DOMs <head> element
+   */
   static inject() {
     $("<style>")
       .prop("type", "text/css")
@@ -263,15 +302,16 @@ class Style {
   static set background(color: string) {
     this.settings.background = color;
   }
+
   static set primary(color: string) {
     this.settings.primary = color;
   }
+
   static set accent(color: string) {
     this.settings.accent = color;
   }
 }
 
-type ValidSetting = string | boolean | number;
 
 class Settings {
   static whitelist = ["itemsStacked", "logLevel"];
@@ -319,8 +359,9 @@ const gtUpdateSetting = (key: string, value: ValidSetting) => {
   }
 
   let didUpdate = false;
-  // console.log(`[GoatTools:DEBUG] Style[] Setting ${key} value to ${value}`);
+
   const setting = JSON.parse(localStorage.getItem("gt_settings") ?? "{}");
+
   if (setting[key] != value) {
     didUpdate = true;
     if (value === "") {
@@ -341,16 +382,10 @@ const gtUpdateSetting = (key: string, value: ValidSetting) => {
  * @returns boolean
  */
 const gtUpdateStyle = (key: string, value: any) => {
-  if (["background", "accent", "primary"].indexOf(key) < 0) {
-    // TODO setup static loggign
-    // console.log(
-    //   "[GoatTools:WARN ] Style[] Attempt to save invalid key to styles"
-    // );
-    return false;
-  }
+  if (["background", "accent", "primary"].indexOf(key) < 0) return false;
 
   let didUpdate = false;
-  // console.log(`[GoatTools:DEBUG] Style[] Setting ${key} value to ${value}`);
+
   const style = JSON.parse(localStorage.getItem("gt_style") ?? "{}");
   if (style[key] != value) {
     didUpdate = true;
@@ -372,8 +407,8 @@ class User extends Logger {
   static UPDATE_WAIT_TIME = 60 * 60 * 1;
 
   private __goatlings: { [key: string]: Goat };
+  private __tabs: Tab[];
 
-  tabs: Tab[] = [];
   name: string;
   csrf: string;
   uuid: string;
@@ -386,11 +421,26 @@ class User extends Logger {
     super(() => {
       return this.name ? `User[${String(this.name)}]` : "User[GuestUser]";
     });
+
     this.uuid = uuid;
     this.name = name;
+
+    this.__tabs = JSON.parse(
+      localStorage.getItem(`${this.uuid}_tabs`) ?? "[]"
+    );
+
+    this.__goatlings = JSON.parse(
+      localStorage.getItem(`${this.uuid}_goatlings`) ?? "{}"
+    );
   }
 
   async fetchGoatlings() {
+    if (!this.__tabs) {
+      this.__tabs = JSON.parse(
+        localStorage.getItem(`${this.uuid}_tabs`) ?? "[]"
+      );
+    }
+
     if (!this.__goatlings) {
       this.__goatlings = JSON.parse(
         localStorage.getItem(`${this.uuid}_goatlings`) ?? "{}"
@@ -409,50 +459,55 @@ class User extends Logger {
 
   /**
    * Parse goatling objects from the given JQuery object
-   * @param obj
+   * @param mystuff div.mystuff objects retrieved from JQuery
    */
-  private updateGoatlingsActual(obj: JQuery) {
+  private updateGoatlingsActual(mystuff: JQuery) {
     const goatlings: { [key: string]: Goat } = {};
-    const view_re = /^\/mypets\/view\/([\d]+)\/?/;
 
-    $(obj).each((_, e) => {
+    const name_re = /^\/mypets\/change_name\/([\d]+)\/?/;
+
+    $(mystuff).each((_, e) => {
       let pet_id: string = "";
       let goat_def = $(e).text()?.replace(/[\s]+/g, ";").split(";");
       goat_def.shift();
       goat_def.pop();
 
+      if (goat_def.length <= 4) return;
+      this.logDebug("On goat:", goat_def);
+
       $(e)
-        .find("a")
+        .find("ul > li > a")
         .each((_, a) => {
           if (pet_id != "") return;
           let goto = getUri($(a).attr("href"));
           if (goto == "") return;
-          if (!view_re.test(goto)) return;
-          pet_id = String(view_re.exec(goto)?.[1]);
+          pet_id = name_re.exec(goto)?.[1] ?? ""
         });
 
       // HP and EXP are presented as "current/max"
-      const hp = goat_def[6].split("/");
-      const exp = goat_def[4].split("/");
+      const hp = goat_def[13].split("/");
+      const exp = goat_def[11].split("/");
 
       const goat: Goat = {
         id: pet_id,
         name: goat_def[0],
         portait: getUri($(e).find("img").attr("src")),
-        level: parseSepInt(goat_def[2]),
+        level: parseSepInt(goat_def[9]),
         current_exp: parseSepInt(exp[0]),
         max_exp: parseSepInt(exp[1]),
         current_hp: parseSepInt(hp[0]),
         max_hp: parseSepInt(hp[1]),
-        str: parseSepInt(goat_def[8]),
-        def: parseSepInt(goat_def[10]),
-        int: parseSepInt(goat_def[12]),
-        spd: parseSepInt(goat_def[14]),
-        hunger: parseSepInt(goat_def[16].split("/")[0]),
-        mood: parseSepInt(goat_def[18].split("/")[0]),
-        wins: parseSepInt(goat_def[20]),
-        losses: parseSepInt(goat_def[22]),
+        str: parseSepInt(goat_def[15]),
+        def: parseSepInt(goat_def[17]),
+        int: parseSepInt(goat_def[19]),
+        spd: parseSepInt(goat_def[21]),
+        hunger: parseSepInt(goat_def[23].split("/")[0]),
+        mood: parseSepInt(goat_def[25].split("/")[0]),
+        wins: parseSepInt(goat_def[27]),
+        losses: parseSepInt(goat_def[29]),
       };
+
+      console.log("Goat:", goat)
 
       goatlings[goat.name] = goat;
     });
@@ -460,31 +515,112 @@ class User extends Logger {
     return goatlings;
   }
 
+  private updateGoatlingTabsActual(tabs: JQuery) {
+    this.__tabs = []
+
+    $(tabs).find("div.pv-cat > p > a").each((_, e) => {
+      // If there's an img present, then the name is not present
+      if ($(e).find("img").length > 0) return;
+
+      // Parse the Tab ID from the link URL
+      let uri = getUri($(e).attr("href"))
+      let found = /\/manage\/(\d+)/.exec(uri) ?? []
+      let tid = parseInt(found[1] ?? "")
+
+      // Filter out non-tab URLs
+      if (!found[1] || Number.isNaN(tid)) return;
+
+      let tab: Tab = {
+        id: tid,
+        name: $(e).text()
+      }
+
+      this.__tabs.push(tab)
+    })
+  }
+
   /**
-   * Fetch and update the goatlings data with the latest information from /mypets
+   * 
    */
-  async updateGoatlings(): Promise<void> {
-    this.logInfo("Updating goatlings ...");
-    if (getUri() == "/mypets") {
-      this.__goatlings = this.updateGoatlingsActual($("div.mypets-pet"));
+  async updateGoatlingTabs(): Promise<void> {
+    this.logInfo("Updating goatling tabs ...")
+
+    if (getUri() == "/MyGoatlings") {
+      this.updateGoatlingTabsActual($("div#wrapper > div#content > form"))
+      this.logDebug("updateGoatlingTabs() Finished update");
+
       localStorage.setItem(
-        `${this.uuid}_goatlings`,
-        JSON.stringify(this.__goatlings)
+        `${this.uuid}_tabs`,
+        JSON.stringify(this.__tabs)
       );
-      this.logDebug("updateGoatlings() Finished update");
-    } else {
-      this.logDebug("Fetching pet data from /mypets ...");
+      return
+    }
+
+    $.ajax({
+      url: `${PAGE}/MyGoatlings`,
+      async: true,
+      success: (data) => {
+        this.updateGoatlingTabsActual($(data).find("div"));
+        this.logDebug("updateGoatlingTabs() Finished update");
+
+        localStorage.setItem(
+          `${this.uuid}_tabs`,
+          JSON.stringify(this.__tabs)
+        );
+      },
+    });
+  }
+
+  /**
+   * Update a users registered Goatlings
+   * @param skipTabs Skip updating tabs when updating goatlings
+   * @param whichTab Update goatlings from a specific tab
+   */
+  async updateGoatlings(
+    skipTabs: boolean = false,
+    whichTab: number = -1): Promise<void> {
+    if (!skipTabs) this.updateGoatlingTabs();
+    this.logDebug(this)
+    if (typeof this.__tabs === "undefined") this.updateGoatlingTabs();
+
+    let tabJobs: Tab[] = this.__tabs;
+    if (whichTab > -1) {
+      tabJobs = this.__tabs.filter((t) => t.id === whichTab);
+    }
+
+    this.logDebug("Fetching goatlings from tabs:", tabJobs, this.__tabs);
+
+    this.logInfo("Updating goatlings ...");
+    for (var tab of tabJobs) {
+      if (getUri() == `/MyGoatlings/manage/${tab.id}`) {
+        this.__goatlings = {
+          ...this.updateGoatlingsActual($("div.mystuff")),
+          ...this.__goatlings,
+        };
+
+        localStorage.setItem(
+          `${this.uuid}_goatlings`,
+          JSON.stringify(this.__goatlings)
+        );
+
+        this.logDebug("updateGoatlings() Finished update");
+        return
+      }
+
       $.ajax({
-        url: `${PAGE}/mypets`,
+        url: `${PAGE}/MyGoatlings/manage/${tab.id}`,
         async: true,
         success: (data) => {
-          this.__goatlings = this.updateGoatlingsActual(
-            $(data).find("div.mypets-pet")
-          );
+          this.__goatlings = {
+            ...this.updateGoatlingsActual($(data).find("div.mystuff")),
+            ...this.__goatlings,
+          };
+
           localStorage.setItem(
             `${this.uuid}_goatlings`,
             JSON.stringify(this.__goatlings)
           );
+
           this.logDebug("updateGoatlings() Finished update");
         },
       });
@@ -495,6 +631,7 @@ class User extends Logger {
       `${Math.floor(Date.now() / 1000)}`
     );
   }
+
 
   /**
    * Determine whether or not the last user update has expired for a given field
@@ -524,9 +661,21 @@ class Mod extends Logger {
   static user: User | null = null;
 
   name: string = "";
-  runsOn: (string | RegExp)[] = [];
   enabled: boolean;
+
+  /**Acceptable URIs - or URI matches - that this may run on */
+  runsOn: (string | RegExp)[] = [];
+
+  /**Overrideable callback method that runs on page load
+   * Generally, this is where the main body of a mod will be
+   */
   onActivate: (self: Mod) => Promise<boolean>;
+
+  /**Overrideable callback method that is run before any mod is run
+   * This callback is intended for setting up preporatory work that the mod needs
+   * in order to function. This is also the appropriate location to set injected
+   * stylesheets and scripts that need to be accessible from the DOM.
+   */
   onPreload: (self: Mod) => any;
 
   get user() {
@@ -547,6 +696,12 @@ class Mod extends Logger {
     };
   }
 
+  /**
+   * Activates the main body of the mod
+   * 
+   * Only permits running the mod if it's enable and the current page is one that
+   * this mod is permitted to run on
+   */
   async activate() {
     if (!this.enabled) return this.logDebug("Not enabled, skipping");
 
@@ -723,15 +878,32 @@ Mod.create("sidebarOverhaul", async (mod) => {
 });
 
 Mod.create("pageUpdates", (mod) => {
-  mod.runsOn = ["/mypets", "/battle/over", "/inventory/view_action"];
+  mod.runsOn = [
+    "/MyGoatlings",
+    "/MyGoatlings/manage",
+    "/battle/over",
+    "/inventory/view_action",
+  ];
+
   mod.onActivate = async () => {
     let doUpdate = false;
     const uri = getUri();
 
+    let skipTabs = false
+    let whichTab = -1
+
     switch (true) {
-      case uri == "/mypets": {
-        doUpdate = true;
+      case uri.startsWith("/MyGoatlings/manage"): {
+        whichTab = parseInt(/^\/MyGoatlings\/manage\/([0-9]+)/.exec(uri)?.[1] ?? "-1");
+        if (whichTab > -1) {
+          skipTabs = true;
+          doUpdate = true;
+        }
         break;
+      }
+      case uri == "/MyGoatlings": {
+        mod.user?.updateGoatlingTabs()
+        break
       }
       case uri.startsWith("/battle/over"): {
         if (/The battle is over/.test($("div#content").text())) doUpdate = true;
@@ -755,7 +927,7 @@ Mod.create("pageUpdates", (mod) => {
       }
     }
 
-    mod.user?.updateGoatlings();
+    if (doUpdate) mod.user?.updateGoatlings(skipTabs, whichTab);
     return true;
   };
 });
@@ -1021,23 +1193,20 @@ Mod.create("petHeader", (mod) => {
     const hp = `${active.current_hp}/${active.max_hp}`;
 
     $("div#header > div#active_pet_image > img")
-      .wrap(`<a href="/mypets"></a>`)
+      .wrap(`<a href="/MyGoatlings"></a>`)
       .parent()
       .parent().after(`
         <div class="active_pet_stats">
-          <div class="stat-header">Level:  <span>${
-            active.level
-          }</span><br></div>
+          <div class="stat-header">Level:  <span>${active.level
+        }</span><br></div>
           <b>Hp</b>:     <span class="${getStatClass(
-            active.current_hp,
-            active.max_hp
-          )}">${hp}</span><br>
-          <b>Hunger</b>: <span class="${getStatClass(active.hunger)}">${
-      active.hunger
-    }/100</span><br>
-          <b>Mood</b>:   <span class="${getStatClass(active.mood)}">${
-      active.mood
-    }/100</span><br><hr>
+          active.current_hp,
+          active.max_hp
+        )}">${hp}</span><br>
+          <b>Hunger</b>: <span class="${getStatClass(active.hunger)}">${active.hunger
+        }/100</span><br>
+          <b>Mood</b>:   <span class="${getStatClass(active.mood)}">${active.mood
+        }/100</span><br><hr>
           <b>Wins</b>:   <span >${active.wins}</span><br>
           <b>Loss</b>:   <span >${active.losses}</span><br>
         </div>
@@ -1052,7 +1221,7 @@ Mod.create("petHeader", (mod) => {
 Mod.create("settingsPage", (mod) => {
   mod.runsOn = ["/settings"];
 
-  mod.enabled = true;
+  mod.enabled = false;
 
   mod.onPreload = () => {
     Style.add(/*css*/ `
@@ -1169,9 +1338,7 @@ Mod.create("settingsPage", (mod) => {
     settings_root.append(/*html*/ `
       <div id="gt-tools-settings" class="gt-settings hidden">
         <form id="gt-update-settings" onsubmit="return gtUpdateSettingFromForm(this)">
-        <input class="submit" type="image" src="${
-          RES.image.save
-        }" value="Update" name="gt-submit">
+        <input class="submit" type="image" src="${RES.image.save}" value="Update" name="gt-submit">
         <table id="gt-style-settings">
           <tbody>
             <tr>
@@ -1184,23 +1351,17 @@ Mod.create("settingsPage", (mod) => {
             </tr>
             <tr>
               <td>Background Color</td>
-              <td><input type="text" value="${Style.get(
-                "background"
-              )}" name="gt-color-background"></td>
+              <td><input type="text" value="${Style.get("background")}" name="gt-color-background"></td>
             </tr>
 
             <tr>
               <td>Primary Color</td>
-              <td><input type="text" value="${Style.get(
-                "primary"
-              )}" name="gt-color-primary"></td>
+              <td><input type="text" value="${Style.get("primary")}" name="gt-color-primary"></td>
             </tr>
 
             <tr>
               <td>Accent Color</td>
-              <td><input type="text" value="${Style.get(
-                "accent"
-              )}" name="gt-color-accent"></td>
+              <td><input type="text" value="${Style.get("accent")}" name="gt-color-accent"></td>
             </tr>
           </tbody>
         </table>
@@ -1410,11 +1571,10 @@ Mod.create("inventoryTools", (mod) => {
         
         &nbsp|&nbsp
         <div class="header-option">
-          <img id="toggle-stack" src="${
-            Settings.get("itemsStacked")
-              ? RES.image.stacked
-              : RES.image.unstacked
-          }">
+          <img id="toggle-stack" src="${Settings.get("itemsStacked")
+        ? RES.image.stacked
+        : RES.image.unstacked
+      }">
         </div>
       </div>
     `);
@@ -1467,9 +1627,8 @@ Mod.create("inventoryTools", (mod) => {
           `/inventory/index/${Settings.get("itemsStacked") ? 2 : 1}${trailing}`
         );
 
-        window.location.href = `/inventory/index/${
-          Settings.get("itemsStacked") ? 2 : 1
-        }${trailing}`;
+        window.location.href = `/inventory/index/${Settings.get("itemsStacked") ? 2 : 1
+          }${trailing}`;
 
         return;
       }
