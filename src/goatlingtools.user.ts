@@ -449,7 +449,7 @@ class User extends Logger {
 
     $(mystuff).each((_, e) => {
       let pet_id: string = "";
-      let goat_def = $(e).text()?.replace(/[\s]+/g, ";").split(";");
+      const goat_def = $(e).text()?.replace(/[\s]+/g, ";").split(";");
       goat_def.shift();
       goat_def.pop();
 
