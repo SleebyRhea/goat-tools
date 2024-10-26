@@ -1374,7 +1374,6 @@ Mod.create("settingsPage", (mod) => {
     );
 
     root.addClass("gt-settings").find("h2")[0].remove();
-
     const settings_root = $("div#content.gt-settings-container");
     root.attr("id", "my-settings").appendTo(settings_root);
 
