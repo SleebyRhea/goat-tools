@@ -435,26 +435,7 @@ class User extends Logger {
   }
 
   async fetchGoatlings() {
-    if (!this.__tabs) {
-      this.__tabs = JSON.parse(
-        localStorage.getItem(`${this.uuid}_tabs`) ?? "[]"
-      );
-    }
-
-    if (!this.__goatlings) {
-      this.__goatlings = JSON.parse(
-        localStorage.getItem(`${this.uuid}_goatlings`) ?? "{}"
-      );
-    }
     return this.__goatlings;
-  }
-
-  async updateGoatling(name: string, data: { [key: string]: any }) {
-    this.__goatlings[name] = { ...this.__goatlings[name], ...data };
-    localStorage.setItem(
-      `${this.uuid}_goatlings`,
-      JSON.stringify(this.__goatlings)
-    );
   }
 
   /**
@@ -617,7 +598,7 @@ class User extends Logger {
 
     $.ajax({
       url: `${PAGE}/MyGoatlings`,
-      async: true,
+      async: false,
       success: (data) => {
         this.updateGoatlingTabsActual($(data).find("div"));
         this.logDebug("updateGoatlingTabs() Finished update");
@@ -650,17 +631,13 @@ class User extends Logger {
     this.logDebug("Fetching goatlings from tabs:", tabJobs, this.__tabs);
 
     this.logInfo("Updating goatlings ...");
+    let new_goats: { [key: string]: Goat } = {};
     for (var tab of tabJobs) {
       if (getUri() == `/MyGoatlings/manage/${tab.id}`) {
-        this.__goatlings = {
+        new_goats = {
           ...this.updateGoatlingsActual($("div.mystuff")),
-          ...this.__goatlings,
+          ...new_goats,
         };
-
-        localStorage.setItem(
-          `${this.uuid}_goatlings`,
-          JSON.stringify(this.__goatlings)
-        );
 
         this.logDebug("updateGoatlings() Finished update");
         return
@@ -668,22 +645,24 @@ class User extends Logger {
 
       $.ajax({
         url: `${PAGE}/MyGoatlings/manage/${tab.id}`,
-        async: true,
+        async: false,
         success: (data) => {
-          this.__goatlings = {
+          new_goats = {
             ...this.updateGoatlingsActual($(data).find("div.mystuff")),
-            ...this.__goatlings,
+            ...new_goats,
           };
-
-          localStorage.setItem(
-            `${this.uuid}_goatlings`,
-            JSON.stringify(this.__goatlings)
-          );
 
           this.logDebug("updateGoatlings() Finished update");
         },
       });
     }
+
+    this.__goatlings = new_goats;
+
+    localStorage.setItem(
+      `${this.uuid}_goatlings`,
+      JSON.stringify(this.__goatlings)
+    );
 
     localStorage.setItem(
       `${this.uuid}_goatlings_last_update`,
@@ -696,6 +675,9 @@ class User extends Logger {
    * Determine whether or not the last user update has expired for a given field
    */
   private async checkNeedsUpdate(what: string): Promise<boolean> {
+    if (!this.__goatlings || Object.keys(this.__goatlings).length < 1) return true;
+    if (!this.__tabs || this.__tabs.length < 1) return true;
+
     let now = Math.floor(Date.now() / 1000);
     let last = Math.floor(
       parseSepInt(
@@ -708,6 +690,8 @@ class User extends Logger {
 
   async doUpdate() {
     this.logInfo("Update triggered ...");
+    if (!this.name) return;
+
     if (await this.checkNeedsUpdate("goatlings")) this.updateGoatlings();
   }
 }
