@@ -8,7 +8,7 @@
 // @downloadURL https://raw.githubusercontent.com/SleebyRhea/goat-tools/refs/heads/main/build/goatlingtools.user.js
 // @updateURL   https://raw.githubusercontent.com/SleebyRhea/goat-tools/refs/heads/main/build/goatlingtools.user.js
 // @license     bsd-3-clause
-// @version     1.2.1
+// @version     1.2.2
 // ==/UserScript==
 /**
  *
@@ -30,6 +30,10 @@
  *  it regardless. I make this in my spare time, and for my own amusement.
  *
  * Changelog
+ *  v1.2.2
+ *    Bug fixes
+ *      - Fix early returns from older async code blocking goat updates
+ *
  *  v1.2.1
  *    Fix some bugs from v1.2.0
  *      - Fix goatling parsing error (remove specific index dependency)
