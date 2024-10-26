@@ -5,8 +5,8 @@
 // @match       https://goatlings.com/*
 // @match       https://www.goatlings.com/*
 // @require     https://code.jquery.com/jquery-3.7.1.min.js
-// @downloadURL https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/build/goatlingtools.user.js
-// @updateURL   https://raw.githubusercontent.com/SleebyRhea/goatlings-usability/main/build/goatlingtools.user.js
+// @downloadURL https://raw.githubusercontent.com/SleebyRhea/goat-tools/refs/heads/main/build/goatlingtools.user.js
+// @updateURL   https://raw.githubusercontent.com/SleebyRhea/goat-tools/refs/heads/main/build/goatlingtools.user.js
 // @license     bsd-3-clause
 // @version     1.2.0
 // ==/UserScript==

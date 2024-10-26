@@ -1,8 +1,8 @@
 {
-  "name": "goatlings-usability",
+  "name": "goatlings-tools",
   "version": "1.0.0",
   "description": "Various tweaks to Goatlings.com",
-  "main": "goatlings-usability.js",
+  "main": "goatlings-tools.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
