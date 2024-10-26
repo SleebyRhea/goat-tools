@@ -8,7 +8,7 @@
 // @downloadURL https://raw.githubusercontent.com/SleebyRhea/goat-tools/refs/heads/main/build/goatlingtools.user.js
 // @updateURL   https://raw.githubusercontent.com/SleebyRhea/goat-tools/refs/heads/main/build/goatlingtools.user.js
 // @license     bsd-3-clause
-// @version     1.2.2
+// @version     1.2.3
 // ==/UserScript==
 /**
  *
@@ -30,6 +30,9 @@
  *  it regardless. I make this in my spare time, and for my own amusement.
  *
  * Changelog
+ *  v1.2.3
+ *    Add some user input guardrails to gtUpdateStyle, and re-enable settings
+ *
  *  v1.2.2
  *    Bug fixes
  *      - Fix early returns from older async code blocking goat updates
