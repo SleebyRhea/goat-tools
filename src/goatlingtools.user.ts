@@ -10,9 +10,36 @@
 // @license     bsd-3-clause
 // @version     1.2.0
 // ==/UserScript==
-
 /**
- * Change Log
+ * 
+ * About
+ *  This userscript makes a series of tweaks to the https://goatlings.com website
+ *  to make it a smidgeon more pleasing to my eye. Included as well are severeal
+ *  QoL changes:
+ * 
+ *  - Shows the currently active goat on the upper righthand side of the bar
+ *  - Adds a navigation bar to the top of the screen with configurable colors
+ *  - Saves whether or not you have items stacked or unstacked across loads
+ *  - Shows a calculated haggling price
+ * 
+ * A Note to the developers of Goatlings
+ *  Should you find any - or all - of these features objectionable, I am more
+ *  than willing to make edits as desired. I've done my best to keep this as
+ *  ToS friendly as possible (including limiting extra calls to your site for 
+ *  pulling character data), but I fully understand if you take issue with
+ *  it regardless. I make this in my spare time, and for my own amusement.
+ * 
+ * Changelog
+ *  v1.2.1
+ *    Fix some bugs from v1.2.0
+ *      - Fix goatling parsing error (remove specific index dependency)
+ *      - Fix handling for saving goats 
+ *      - Fix case wherein scripts and css will not be applied until you
+ *        have refreshed a sufficient number of times for the mods localstorage
+ *        datastructures to be created / saved. This was happening due to
+ *        needing to pull the tab information, and having async:true set in
+ *        said ajax request.
+ * 
  *  v1.2.0
  *    Update User with the ability to parse goatling tabs
  *      - Added updateGoatlingTabs and updateGoatlingTabsActual
@@ -23,6 +50,7 @@
  *        * whichTab: select which goatling tab to update
  *    Fix updateGoatlingsActual to work with recent changes to /mypets
  *    Added some more documentation comments
+ * 
  */
 
 // import * as $ from "jquery";
