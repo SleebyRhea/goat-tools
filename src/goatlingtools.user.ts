@@ -484,30 +484,89 @@ class User extends Logger {
           pet_id = name_re.exec(goto)?.[1] ?? ""
         });
 
-      // HP and EXP are presented as "current/max"
-      const hp = goat_def[13].split("/");
-      const exp = goat_def[11].split("/");
-
       const goat: Goat = {
         id: pet_id,
         name: goat_def[0],
         portait: getUri($(e).find("img").attr("src")),
-        level: parseSepInt(goat_def[9]),
-        current_exp: parseSepInt(exp[0]),
-        max_exp: parseSepInt(exp[1]),
-        current_hp: parseSepInt(hp[0]),
-        max_hp: parseSepInt(hp[1]),
-        str: parseSepInt(goat_def[15]),
-        def: parseSepInt(goat_def[17]),
-        int: parseSepInt(goat_def[19]),
-        spd: parseSepInt(goat_def[21]),
-        hunger: parseSepInt(goat_def[23].split("/")[0]),
-        mood: parseSepInt(goat_def[25].split("/")[0]),
-        wins: parseSepInt(goat_def[27]),
-        losses: parseSepInt(goat_def[29]),
+        level: -1,
+        current_exp: -1,
+        max_exp: -1,
+        current_hp: -1,
+        max_hp: -1,
+        str: -1,
+        def: -1,
+        int: -1,
+        spd: -1,
+        hunger: -1,
+        mood: -1,
+        wins: -1,
+        losses: -1,
       };
 
-      console.log("Goat:", goat)
+      goat_def.forEach((what, i) => {
+        switch (what.toLowerCase()) {
+          case "level":
+          case "level:": {
+            goat.level = parseSepInt(goat_def[i + 1])
+          }
+
+          case "exp":
+          case "exp:": {
+            const exp = goat_def[i + 1].split("/") ?? []
+            goat.max_exp = parseSepInt(exp[1] ?? "-1")
+            goat.current_exp = parseSepInt(exp[0] ?? "-1")
+          }
+
+          case "hp":
+          case "hp:": {
+            const hp = goat_def[i + 1].split("/") ?? []
+            goat.max_hp = parseSepInt(hp[1] ?? "-1")
+            goat.current_hp = parseSepInt(hp[0] ?? "-1")
+          }
+
+          case "strength":
+          case "strength:": {
+            goat.str = parseSepInt(goat_def[i + 1])
+          }
+
+          case "defense":
+          case "defense:": {
+            goat.def = parseSepInt(goat_def[i + 1])
+          }
+
+          case "intelligence":
+          case "intelligence:": {
+            goat.int = parseSepInt(goat_def[i + 1])
+          }
+
+          case "speed":
+          case "speed:": {
+            goat.spd = parseSepInt(goat_def[i + 1])
+          }
+
+          case "hunger":
+          case "hunger:": {
+            goat.hunger = parseSepInt(goat_def[i + 1].split("/")?.[1] ?? "-1")
+          }
+
+          case "mood":
+          case "mood:": {
+            goat.mood = parseSepInt(goat_def[i + 1].split("/")?.[1] ?? "-1")
+          }
+
+          case "wins":
+          case "wins:": {
+            goat.wins = parseSepInt(goat_def[i + 1])
+          }
+
+          case "losses":
+          case "losses:": {
+            goat.losses = parseSepInt(goat_def[i + 1])
+          }
+        }
+      })
+
+      this.logDebug("Parsed goat: ", goat)
 
       goatlings[goat.name] = goat;
     });
