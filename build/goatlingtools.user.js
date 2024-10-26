@@ -1115,7 +1115,7 @@ Mod.create("petHeader", (mod) => {
 });
 Mod.create("settingsPage", (mod) => {
     mod.runsOn = ["/settings"];
-    mod.enabled = false;
+    mod.enabled = true;
     mod.onPreload = () => {
         Style.add(/*css*/ `
       #content.gt-settings-container {  
@@ -1172,18 +1172,23 @@ Mod.create("settingsPage", (mod) => {
     `);
     };
     const gtUpdateSettingFromForm = (e) => {
-        var _b, _c;
+        var _b, _c, _d, _e, _f;
         const updateFormArray = $(e).serializeArray();
         let didUpdate = false;
         for (const data of updateFormArray) {
             switch (true) {
                 case /^gt\-color\-/.test((_b = data.name) !== null && _b !== void 0 ? _b : ""): {
+                    let data_len = (_e = ((_d = (_c = /^#([a-zA-Z0-9]+)$/.exec(data.value)) === null || _c === void 0 ? void 0 : _c[1]) !== null && _d !== void 0 ? _d : "")) === null || _e === void 0 ? void 0 : _e.length;
+                    if (!data_len || data_len != 6) {
+                        alert("Invalid style setting entry, please use a CSS hex color code");
+                        throw ("invalid color code given");
+                    }
                     didUpdate = gtUpdateStyle(data.name.replace(/^gt\-color\-/, ""), data.value)
                         ? true
                         : didUpdate;
                     break;
                 }
-                case /^gt\-setting\-/.test((_c = data.name) !== null && _c !== void 0 ? _c : ""): {
+                case /^gt\-setting\-/.test((_f = data.name) !== null && _f !== void 0 ? _f : ""): {
                     didUpdate = gtUpdateSetting(data.name.replace(/^gt\-setting\-/, ""), data.value)
                         ? true
                         : didUpdate;

@@ -8,7 +8,7 @@
 // @downloadURL https://raw.githubusercontent.com/SleebyRhea/goat-tools/refs/heads/main/build/goatlingtools.user.js
 // @updateURL   https://raw.githubusercontent.com/SleebyRhea/goat-tools/refs/heads/main/build/goatlingtools.user.js
 // @license     bsd-3-clause
-// @version     1.2.2
+// @version     1.2.3
 // ==/UserScript==
 /**
  * 
@@ -30,6 +30,9 @@
  *  it regardless. I make this in my spare time, and for my own amusement.
  * 
  * Changelog
+ *  v1.2.3
+ *    Add some user input guardrails to gtUpdateStyle, and re-enable settings
+ * 
  *  v1.2.2
  *    Bug fixes
  *      - Fix early returns from older async code blocking goat updates
@@ -1289,7 +1292,7 @@ Mod.create("petHeader", (mod) => {
 Mod.create("settingsPage", (mod) => {
   mod.runsOn = ["/settings"];
 
-  mod.enabled = false;
+  mod.enabled = true;
 
   mod.onPreload = () => {
     Style.add(/*css*/ `
@@ -1353,6 +1356,12 @@ Mod.create("settingsPage", (mod) => {
     for (const data of updateFormArray) {
       switch (true) {
         case /^gt\-color\-/.test(data.name ?? ""): {
+          let data_len = (/^#([a-zA-Z0-9]+)$/.exec(data.value)?.[1] ?? "")?.length
+          if (!data_len || data_len != 6) {
+            alert("Invalid style setting entry, please use a CSS hex color code")
+            throw ("invalid color code given")
+          }
+
           didUpdate = gtUpdateStyle(
             data.name.replace(/^gt\-color\-/, ""),
             data.value
