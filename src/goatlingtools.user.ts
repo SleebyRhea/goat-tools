@@ -8,7 +8,7 @@
 // @downloadURL https://raw.githubusercontent.com/SleebyRhea/goat-tools/refs/heads/main/build/goatlingtools.user.js
 // @updateURL   https://raw.githubusercontent.com/SleebyRhea/goat-tools/refs/heads/main/build/goatlingtools.user.js
 // @license     bsd-3-clause
-// @version     1.2.0
+// @version     1.2.1
 // ==/UserScript==
 /**
  * 
