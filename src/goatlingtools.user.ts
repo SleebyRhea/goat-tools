@@ -8,7 +8,7 @@
 // @downloadURL https://raw.githubusercontent.com/SleebyRhea/goat-tools/refs/heads/main/build/goatlingtools.user.js
 // @updateURL   https://raw.githubusercontent.com/SleebyRhea/goat-tools/refs/heads/main/build/goatlingtools.user.js
 // @license     bsd-3-clause
-// @version     1.2.1
+// @version     1.2.2
 // ==/UserScript==
 /**
  * 
@@ -30,6 +30,10 @@
  *  it regardless. I make this in my spare time, and for my own amusement.
  * 
  * Changelog
+ *  v1.2.2
+ *    Bug fixes
+ *      - Fix early returns from older async code blocking goat updates
+ * 
  *  v1.2.1
  *    Fix some bugs from v1.2.0
  *      - Fix goatling parsing error (remove specific index dependency)
@@ -555,12 +559,12 @@ class User extends Logger {
 
           case "hunger":
           case "hunger:": {
-            goat.hunger = parseSepInt(goat_def[i + 1].split("/")?.[1] ?? "-1")
+            goat.hunger = parseSepInt(goat_def[i + 1].split("/")?.[0] ?? "-1")
           }
 
           case "mood":
           case "mood:": {
-            goat.mood = parseSepInt(goat_def[i + 1].split("/")?.[1] ?? "-1")
+            goat.mood = parseSepInt(goat_def[i + 1].split("/")?.[0] ?? "-1")
           }
 
           case "wins":
@@ -615,28 +619,22 @@ class User extends Logger {
 
     if (getUri() == "/MyGoatlings") {
       this.updateGoatlingTabsActual($("div#wrapper > div#content > form"))
-      this.logDebug("updateGoatlingTabs() Finished update");
-
-      localStorage.setItem(
-        `${this.uuid}_tabs`,
-        JSON.stringify(this.__tabs)
-      );
-      return
+    } else {
+      $.ajax({
+        url: `${PAGE}/MyGoatlings`,
+        async: false,
+        success: (data) => {
+          this.updateGoatlingTabsActual($(data).find("div"));
+        },
+      });
     }
 
-    $.ajax({
-      url: `${PAGE}/MyGoatlings`,
-      async: false,
-      success: (data) => {
-        this.updateGoatlingTabsActual($(data).find("div"));
-        this.logDebug("updateGoatlingTabs() Finished update");
+    localStorage.setItem(
+      `${this.uuid}_tabs`,
+      JSON.stringify(this.__tabs)
+    );
 
-        localStorage.setItem(
-          `${this.uuid}_tabs`,
-          JSON.stringify(this.__tabs)
-        );
-      },
-    });
+    this.logDebug("updateGoatlingTabs() Finished update");
   }
 
   /**
@@ -668,21 +666,18 @@ class User extends Logger {
         };
 
         this.logDebug("updateGoatlings() Finished update");
-        return
+      } else {
+        $.ajax({
+          url: `${PAGE}/MyGoatlings/manage/${tab.id}`,
+          async: false,
+          success: (data) => {
+            new_goats = {
+              ...this.updateGoatlingsActual($(data).find("div.mystuff")),
+              ...new_goats,
+            };
+          },
+        });
       }
-
-      $.ajax({
-        url: `${PAGE}/MyGoatlings/manage/${tab.id}`,
-        async: false,
-        success: (data) => {
-          new_goats = {
-            ...this.updateGoatlingsActual($(data).find("div.mystuff")),
-            ...new_goats,
-          };
-
-          this.logDebug("updateGoatlings() Finished update");
-        },
-      });
     }
 
     this.__goatlings = new_goats;
@@ -696,6 +691,8 @@ class User extends Logger {
       `${this.uuid}_goatlings_last_update`,
       `${Math.floor(Date.now() / 1000)}`
     );
+
+    this.logDebug("updateGoatlings() Finished update");
   }
 
 

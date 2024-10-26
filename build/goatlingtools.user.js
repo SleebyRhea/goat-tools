@@ -458,11 +458,11 @@ class User extends Logger {
                     }
                     case "hunger":
                     case "hunger:": {
-                        goat.hunger = parseSepInt((_j = (_h = goat_def[i + 1].split("/")) === null || _h === void 0 ? void 0 : _h[1]) !== null && _j !== void 0 ? _j : "-1");
+                        goat.hunger = parseSepInt((_j = (_h = goat_def[i + 1].split("/")) === null || _h === void 0 ? void 0 : _h[0]) !== null && _j !== void 0 ? _j : "-1");
                     }
                     case "mood":
                     case "mood:": {
-                        goat.mood = parseSepInt((_l = (_k = goat_def[i + 1].split("/")) === null || _k === void 0 ? void 0 : _k[1]) !== null && _l !== void 0 ? _l : "-1");
+                        goat.mood = parseSepInt((_l = (_k = goat_def[i + 1].split("/")) === null || _k === void 0 ? void 0 : _k[0]) !== null && _l !== void 0 ? _l : "-1");
                     }
                     case "wins":
                     case "wins:": {
@@ -508,19 +508,18 @@ class User extends Logger {
             this.logInfo("Updating goatling tabs ...");
             if (getUri() == "/MyGoatlings") {
                 this.updateGoatlingTabsActual($("div#wrapper > div#content > form"));
-                this.logDebug("updateGoatlingTabs() Finished update");
-                localStorage.setItem(`${this.uuid}_tabs`, JSON.stringify(this.__tabs));
-                return;
             }
-            $.ajax({
-                url: `${PAGE}/MyGoatlings`,
-                async: false,
-                success: (data) => {
-                    this.updateGoatlingTabsActual($(data).find("div"));
-                    this.logDebug("updateGoatlingTabs() Finished update");
-                    localStorage.setItem(`${this.uuid}_tabs`, JSON.stringify(this.__tabs));
-                },
-            });
+            else {
+                $.ajax({
+                    url: `${PAGE}/MyGoatlings`,
+                    async: false,
+                    success: (data) => {
+                        this.updateGoatlingTabsActual($(data).find("div"));
+                    },
+                });
+            }
+            localStorage.setItem(`${this.uuid}_tabs`, JSON.stringify(this.__tabs));
+            this.logDebug("updateGoatlingTabs() Finished update");
         });
     }
     /**
@@ -546,20 +545,21 @@ class User extends Logger {
                 if (getUri() == `/MyGoatlings/manage/${tab.id}`) {
                     new_goats = Object.assign(Object.assign({}, this.updateGoatlingsActual($("div.mystuff"))), new_goats);
                     this.logDebug("updateGoatlings() Finished update");
-                    return;
                 }
-                $.ajax({
-                    url: `${PAGE}/MyGoatlings/manage/${tab.id}`,
-                    async: false,
-                    success: (data) => {
-                        new_goats = Object.assign(Object.assign({}, this.updateGoatlingsActual($(data).find("div.mystuff"))), new_goats);
-                        this.logDebug("updateGoatlings() Finished update");
-                    },
-                });
+                else {
+                    $.ajax({
+                        url: `${PAGE}/MyGoatlings/manage/${tab.id}`,
+                        async: false,
+                        success: (data) => {
+                            new_goats = Object.assign(Object.assign({}, this.updateGoatlingsActual($(data).find("div.mystuff"))), new_goats);
+                        },
+                    });
+                }
             }
             this.__goatlings = new_goats;
             localStorage.setItem(`${this.uuid}_goatlings`, JSON.stringify(this.__goatlings));
             localStorage.setItem(`${this.uuid}_goatlings_last_update`, `${Math.floor(Date.now() / 1000)}`);
+            this.logDebug("updateGoatlings() Finished update");
         });
     }
     /**
