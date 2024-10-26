@@ -10,32 +10,48 @@
 // @license     bsd-3-clause
 // @version     1.2.0
 // ==/UserScript==
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
+/**
+ *
+ * About
+ *  This userscript makes a series of tweaks to the https://goatlings.com website
+ *  to make it a smidgeon more pleasing to my eye. Included as well are severeal
+ *  QoL changes:
+ *
+ *  - Shows the currently active goat on the upper righthand side of the bar
+ *  - Adds a navigation bar to the top of the screen with configurable colors
+ *  - Saves whether or not you have items stacked or unstacked across loads
+ *  - Shows a calculated haggling price
+ *
+ * A Note to the developers of Goatlings
+ *  Should you find any - or all - of these features objectionable, I am more
+ *  than willing to make edits as desired. I've done my best to keep this as
+ *  ToS friendly as possible (including limiting extra calls to your site for
+ *  pulling character data), but I fully understand if you take issue with
+ *  it regardless. I make this in my spare time, and for my own amusement.
+ *
+ * Changelog
+ *  v1.2.1
+ *    Fix some bugs from v1.2.0
+ *      - Fix goatling parsing error (remove specific index dependency)
+ *      - Fix handling for saving goats
+ *      - Fix case wherein scripts and css will not be applied until you
+ *        have refreshed a sufficient number of times for the mods localstorage
+ *        datastructures to be created / saved. This was happening due to
+ *        needing to pull the tab information, and having async:true set in
+ *        said ajax request.
+ *
+ *  v1.2.0
+ *    Update User with the ability to parse goatling tabs
+ *      - Added updateGoatlingTabs and updateGoatlingTabsActual
+ *      - Tabs are now saved in localstorage and loaded on startup
+ *      - updateGoatlings by default runs updateGoatlingTabs
+ *      - updateGoatlings now takes optional arguments:
+ *        * skipTabs: skip updating goatling tabs, unless necessary
+ *        * whichTab: select which goatling tab to update
+ *    Fix updateGoatlingsActual to work with recent changes to /mypets
+ *    Added some more documentation comments
+ *
+ */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -45,45 +61,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
-    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (g && (g = 0, op[0] && (_ = 0)), _) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
-};
 var _a;
-var _this = this;
-var RES = {
+const RES = {
     image: {
         mail: "/images/layout/mail3.gif",
         sugarstars: "/images/layout/SS2.gif",
@@ -136,14 +115,13 @@ RES.image.unstacked =
         "fv2XiKIY733lx2VVU2b55fxBlxc64KiKKDlfNGYLOeL4QY2cTUN1OY9p8RPxUw6GUjivI/WhTWTmwZc3AaWCMAEG3/TgItLs5cyIWK1COlLp2EIZVW" +
         "37wHEr+vKUDzX+XnReF0ZQ+KnRCTc5HW+Iq2LweJRFDTPVgPeYSyNQeKnzdFK/LRVHfvCJ6j4DwMGf7LJvCL+Vh378g38zcYi1It/3wAAAABJRU5Er" +
         "kJggg==";
-var PAGE = "https://www.goatlings.com";
+const PAGE = "https://www.goatlings.com";
 /**
  * Return the URI portion of a page url
  * @param string page URL to parse
  * @returns string
  */
-var getUri = function (page) {
-    if (page === void 0) { page = window.location.href; }
+const getUri = (page = window.location.href) => {
     return page.replace(/^https?:\/\/(?:www\.)?goatlings\.com\/?/, "/");
 };
 /**
@@ -151,9 +129,7 @@ var getUri = function (page) {
  * @param toInt
  * @returns int
  */
-var parseSepInt = function (toInt, sep) {
-    if (toInt === void 0) { toInt = "0"; }
-    if (sep === void 0) { sep = ","; }
+const parseSepInt = (toInt = "0", sep = ",") => {
     return parseInt(toInt.replace(sep, ""));
 };
 /**
@@ -161,148 +137,124 @@ var parseSepInt = function (toInt, sep) {
  * @param fn Function to run
  * @param uri URI endings that this function will be run on
  */
-var onlyOn = function (fn) {
-    var uri = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-        uri[_i - 1] = arguments[_i];
-    }
+const onlyOn = (fn, ...uri) => {
     if (uri.length <= 0)
         return fn();
-    var pageUri = getUri();
-    for (var _a = 0, uri_1 = uri; _a < uri_1.length; _a++) {
-        var u = uri_1[_a];
-        if (u == pageUri || "".concat(u, "/") == pageUri)
+    const pageUri = getUri();
+    for (const u of uri) {
+        if (u == pageUri || `${u}/` == pageUri)
             return fn();
     }
 };
-var Logger = /** @class */ (function () {
-    function Logger(repr) {
+class Logger {
+    constructor(repr) {
         this.__repr = repr;
     }
-    Logger.prototype.log = function (level) {
-        var msg = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            msg[_i - 1] = arguments[_i];
-        }
-        var loglevel = Number(Settings.get("logLevel"));
+    log(level, ...msg) {
+        let loglevel = Number(Settings.get("logLevel"));
         loglevel = isNaN(loglevel) ? 1 : loglevel;
         if (level <= loglevel)
-            console.log.apply(console, __spreadArray(["[GoatTools:".concat(_b.LOG_REPR[level], "] ").concat(this.__repr(), " ")], msg, false));
-    };
-    Logger.prototype.logInfo = function () {
-        var msg = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            msg[_i] = arguments[_i];
-        }
-        return this.log.apply(this, __spreadArray([_b.LOG_INFO], msg, false));
-    };
-    Logger.prototype.logWarn = function () {
-        var msg = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            msg[_i] = arguments[_i];
-        }
-        return this.log.apply(this, __spreadArray([_b.LOG_WARNING], msg, false));
-    };
-    Logger.prototype.logError = function () {
-        var msg = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            msg[_i] = arguments[_i];
-        }
-        return this.log.apply(this, __spreadArray([_b.LOG_ERROR], msg, false));
-    };
-    Logger.prototype.logDebug = function () {
-        var msg = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            msg[_i] = arguments[_i];
-        }
-        return this.log.apply(this, __spreadArray([_b.LOG_DEBUG], msg, false));
-    };
-    Logger.prototype.logVerbose = function () {
-        var msg = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            msg[_i] = arguments[_i];
-        }
-        return this.log.apply(this, __spreadArray([_b.LOG_VERBOSE], msg, false));
-    };
-    var _b;
-    _b = Logger;
-    Logger.LOG_ERROR = 0;
-    Logger.LOG_WARNING = 1;
-    Logger.LOG_INFO = 2;
-    Logger.LOG_VERBOSE = 3;
-    Logger.LOG_DEBUG = 4;
-    Logger.LOG_REPR = (_a = {},
-        _a[_b.LOG_ERROR] = "ERROR",
-        _a[_b.LOG_WARNING] = "WARN ",
-        _a[_b.LOG_INFO] = "INFO ",
-        _a[_b.LOG_VERBOSE] = "VERB ",
-        _a[_b.LOG_DEBUG] = "DEBUG",
-        _a);
-    return Logger;
-}());
-var Script = /** @class */ (function () {
-    function Script() {
+            console.log(`[GoatTools:${_a.LOG_REPR[level]}] ${this.__repr()} `, ...msg);
     }
+    logInfo(...msg) {
+        return this.log(_a.LOG_INFO, ...msg);
+    }
+    logWarn(...msg) {
+        return this.log(_a.LOG_WARNING, ...msg);
+    }
+    logError(...msg) {
+        return this.log(_a.LOG_ERROR, ...msg);
+    }
+    logDebug(...msg) {
+        return this.log(_a.LOG_DEBUG, ...msg);
+    }
+    logVerbose(...msg) {
+        return this.log(_a.LOG_VERBOSE, ...msg);
+    }
+}
+_a = Logger;
+Logger.LOG_ERROR = 0;
+Logger.LOG_WARNING = 1;
+Logger.LOG_INFO = 2;
+Logger.LOG_VERBOSE = 3;
+Logger.LOG_DEBUG = 4;
+Logger.LOG_REPR = {
+    [this.LOG_ERROR]: "ERROR",
+    [this.LOG_WARNING]: "WARN ",
+    [this.LOG_INFO]: "INFO ",
+    [this.LOG_VERBOSE]: "VERB ",
+    [this.LOG_DEBUG]: "DEBUG",
+};
+class Script {
     /**
      * Adds a function to list of functions that will be injected into the DOM
      * @param name Name of function to be injected
      * @param fn Function to be injected
      */
-    Script.add = function (name, fn) {
+    static add(name, fn) {
         if (this.allScripts[name])
             return;
         this.allScripts[name] = fn.toString();
-    };
+    }
     /**
      * Injects functions added by Script.add to the pages DOM
      *
      * This method is used to enable an easier method for using functions
      * by injected HTML elements.
      */
-    Script.inject = function () {
-        for (var s in this.allScripts) {
+    static inject() {
+        for (const s in this.allScripts) {
             $("<script>")
                 .prop("type", "text/javascript")
-                .html("\n          var ".concat(s, "Actual = ").concat(this.allScripts[s], "\n          var ").concat(s, " = (...args) => {\n            try {\n              return ").concat(s, "Actual(...args)\n            }\n\n            catch (e) {\n              console.log(e)\n            }\n\n            return false\n          }\n        "))
+                .html(`
+          var ${s}Actual = ${this.allScripts[s]}
+          var ${s} = (...args) => {
+            try {
+              return ${s}Actual(...args)
+            }
+
+            catch (e) {
+              console.log(e)
+            }
+
+            return false
+          }
+        `)
                 .appendTo("head");
         }
-    };
-    Script.allScripts = {};
-    return Script;
-}());
-var Style = /** @class */ (function () {
-    function Style() {
     }
+}
+Script.allScripts = {};
+class Style {
     /**
      * Add a CSS sheet to be injected into the DOM when inject is called
      * @param css
      */
-    Style.add = function (css) {
+    static add(css) {
         this.allStyles.push(css.replaceAll(/(?:\r\n|\r|\n)/g, " "));
-    };
-    Style.get = function (property) {
-        var _a;
-        return (_a = this.settings[property]) !== null && _a !== void 0 ? _a : "black";
-    };
+    }
+    static get(property) {
+        var _b;
+        return (_b = this.settings[property]) !== null && _b !== void 0 ? _b : "black";
+    }
     /**
      * Load style settings from localstorage and a given object; with the settings
      * in localstorage taking priority
      * @param defaultSet
      */
-    Style.load = function (defaultSet) {
-        var _a, _c;
-        if (defaultSet === void 0) { defaultSet = {}; }
-        var loadedStyle = JSON.parse((_a = localStorage.getItem("gt_style")) !== null && _a !== void 0 ? _a : "{}");
-        var wantedStyle = __assign(__assign({}, defaultSet), loadedStyle);
-        for (var key in wantedStyle) {
+    static load(defaultSet = {}) {
+        var _b, _c;
+        const loadedStyle = JSON.parse((_b = localStorage.getItem(`gt_style`)) !== null && _b !== void 0 ? _b : "{}");
+        const wantedStyle = Object.assign(Object.assign({}, defaultSet), loadedStyle);
+        for (const key in wantedStyle) {
             this.settings[key] = (_c = wantedStyle[key]) !== null && _c !== void 0 ? _c : this.settings[key];
         }
         localStorage.setItem("gt_style", JSON.stringify(this.settings));
-    };
+    }
     /**
      * Inject loaded styles into the DOMs <head> element
      */
-    Style.inject = function () {
+    static inject() {
         $("<style>")
             .prop("type", "text/css")
             .html(this.allStyles
@@ -311,72 +263,55 @@ var Style = /** @class */ (function () {
             .replaceAll(/%CLR_PRIMARY/g, this.settings.primary)
             .replaceAll(/%CLR_ACCENT/g, this.settings.accent))
             .appendTo("head");
-    };
-    Object.defineProperty(Style, "background", {
-        set: function (color) {
-            this.settings.background = color;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Style, "primary", {
-        set: function (color) {
-            this.settings.primary = color;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Object.defineProperty(Style, "accent", {
-        set: function (color) {
-            this.settings.accent = color;
-        },
-        enumerable: false,
-        configurable: true
-    });
-    Style.allStyles = [];
-    Style.whitelist = ["background", "primary", "accent"];
-    Style.settings = {
-        background: "#FFFFFF",
-        primary: "black",
-        accent: "grey",
-    };
-    return Style;
-}());
-var Settings = /** @class */ (function () {
-    function Settings() {
     }
-    Settings.get = function (property) {
-        var _a;
-        return (_a = this.settings[property]) !== null && _a !== void 0 ? _a : false;
-    };
-    Settings.set = function (property, what) {
+    static set background(color) {
+        this.settings.background = color;
+    }
+    static set primary(color) {
+        this.settings.primary = color;
+    }
+    static set accent(color) {
+        this.settings.accent = color;
+    }
+}
+Style.allStyles = [];
+Style.whitelist = ["background", "primary", "accent"];
+Style.settings = {
+    background: "#FFFFFF",
+    primary: "black",
+    accent: "grey",
+};
+class Settings {
+    static get(property) {
+        var _b;
+        return (_b = this.settings[property]) !== null && _b !== void 0 ? _b : false;
+    }
+    static set(property, what) {
         this.settings[property] = what;
         localStorage.setItem("gt_settings", JSON.stringify(this.settings));
-    };
-    Settings.load = function (defaultSet) {
-        var _a, _c;
-        if (defaultSet === void 0) { defaultSet = {}; }
-        var loadedSettings = JSON.parse((_a = localStorage.getItem("gt_settings")) !== null && _a !== void 0 ? _a : "{}");
-        var wantedSettings = __assign(__assign({}, defaultSet), loadedSettings);
-        for (var key in wantedSettings) {
+    }
+    static load(defaultSet = {}) {
+        var _b, _c;
+        const loadedSettings = JSON.parse((_b = localStorage.getItem(`gt_settings`)) !== null && _b !== void 0 ? _b : "{}");
+        const wantedSettings = Object.assign(Object.assign({}, defaultSet), loadedSettings);
+        for (const key in wantedSettings) {
             this.settings[key] = (_c = wantedSettings[key]) !== null && _c !== void 0 ? _c : this.settings[key];
         }
         localStorage.setItem("gt_settings", JSON.stringify(this.settings));
-    };
-    Settings.whitelist = ["itemsStacked", "logLevel"];
-    Settings.settings = {
-        itemsStacked: false,
-    };
-    return Settings;
-}());
+    }
+}
+Settings.whitelist = ["itemsStacked", "logLevel"];
+Settings.settings = {
+    itemsStacked: false,
+};
 /**
  *
  * @param key Setting to update
  * @param value Value to update the setting to
  * @returns boolean
  */
-var gtUpdateSetting = function (key, value) {
-    var _a;
+const gtUpdateSetting = (key, value) => {
+    var _b;
     if (["itemsStacked", "logLevel"].indexOf(key) < 0) {
         // TODO setup static loggign
         // console.log(
@@ -384,8 +319,8 @@ var gtUpdateSetting = function (key, value) {
         // );
         return false;
     }
-    var didUpdate = false;
-    var setting = JSON.parse((_a = localStorage.getItem("gt_settings")) !== null && _a !== void 0 ? _a : "{}");
+    let didUpdate = false;
+    const setting = JSON.parse((_b = localStorage.getItem("gt_settings")) !== null && _b !== void 0 ? _b : "{}");
     if (setting[key] != value) {
         didUpdate = true;
         if (value === "") {
@@ -404,12 +339,12 @@ var gtUpdateSetting = function (key, value) {
  * @param value Value to update the color to
  * @returns boolean
  */
-var gtUpdateStyle = function (key, value) {
-    var _a;
+const gtUpdateStyle = (key, value) => {
+    var _b;
     if (["background", "accent", "primary"].indexOf(key) < 0)
         return false;
-    var didUpdate = false;
-    var style = JSON.parse((_a = localStorage.getItem("gt_style")) !== null && _a !== void 0 ? _a : "{}");
+    let didUpdate = false;
+    const style = JSON.parse((_b = localStorage.getItem("gt_style")) !== null && _b !== void 0 ? _b : "{}");
     if (style[key] != value) {
         didUpdate = true;
         if (value === "") {
@@ -425,324 +360,314 @@ var gtUpdateStyle = function (key, value) {
 /**
  * Represents a logged in user object
  */
-var User = /** @class */ (function (_super) {
-    __extends(User, _super);
-    function User(uuid, name) {
-        var _a, _c;
-        var _this = _super.call(this, function () {
-            return _this.name ? "User[".concat(String(_this.name), "]") : "User[GuestUser]";
-        }) || this;
-        _this.uuid = uuid;
-        _this.name = name;
-        _this.__tabs = JSON.parse((_a = localStorage.getItem("".concat(_this.uuid, "_tabs"))) !== null && _a !== void 0 ? _a : "[]");
-        _this.__goatlings = JSON.parse((_c = localStorage.getItem("".concat(_this.uuid, "_goatlings"))) !== null && _c !== void 0 ? _c : "{}");
-        return _this;
+class User extends Logger {
+    constructor(uuid, name) {
+        var _b, _c;
+        super(() => {
+            return this.name ? `User[${String(this.name)}]` : "User[GuestUser]";
+        });
+        this.uuid = uuid;
+        this.name = name;
+        this.__tabs = JSON.parse((_b = localStorage.getItem(`${this.uuid}_tabs`)) !== null && _b !== void 0 ? _b : "[]");
+        this.__goatlings = JSON.parse((_c = localStorage.getItem(`${this.uuid}_goatlings`)) !== null && _c !== void 0 ? _c : "{}");
     }
-    User.prototype.fetchGoatlings = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var _a, _c;
-            return __generator(this, function (_d) {
-                if (!this.__tabs) {
-                    this.__tabs = JSON.parse((_a = localStorage.getItem("".concat(this.uuid, "_tabs"))) !== null && _a !== void 0 ? _a : "[]");
-                }
-                if (!this.__goatlings) {
-                    this.__goatlings = JSON.parse((_c = localStorage.getItem("".concat(this.uuid, "_goatlings"))) !== null && _c !== void 0 ? _c : "{}");
-                }
-                return [2 /*return*/, this.__goatlings];
-            });
+    fetchGoatlings() {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.__goatlings;
         });
-    };
-    User.prototype.updateGoatling = function (name, data) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                this.__goatlings[name] = __assign(__assign({}, this.__goatlings[name]), data);
-                localStorage.setItem("".concat(this.uuid, "_goatlings"), JSON.stringify(this.__goatlings));
-                return [2 /*return*/];
-            });
-        });
-    };
+    }
     /**
      * Parse goatling objects from the given JQuery object
      * @param mystuff div.mystuff objects retrieved from JQuery
      */
-    User.prototype.updateGoatlingsActual = function (mystuff) {
-        var _this = this;
-        var goatlings = {};
-        var name_re = /^\/mypets\/change_name\/([\d]+)\/?/;
-        $(mystuff).each(function (_, e) {
-            var _a;
-            var pet_id = "";
-            var goat_def = (_a = $(e).text()) === null || _a === void 0 ? void 0 : _a.replace(/[\s]+/g, ";").split(";");
+    updateGoatlingsActual(mystuff) {
+        const goatlings = {};
+        const name_re = /^\/mypets\/change_name\/([\d]+)\/?/;
+        $(mystuff).each((_, e) => {
+            var _b;
+            let pet_id = "";
+            const goat_def = (_b = $(e).text()) === null || _b === void 0 ? void 0 : _b.replace(/[\s]+/g, ";").split(";");
             goat_def.shift();
             goat_def.pop();
             if (goat_def.length <= 4)
                 return;
-            _this.logDebug("On goat:", goat_def);
+            this.logDebug("On goat:", goat_def);
             $(e)
                 .find("ul > li > a")
-                .each(function (_, a) {
-                var _a, _c;
+                .each((_, a) => {
+                var _b, _c;
                 if (pet_id != "")
                     return;
-                var goto = getUri($(a).attr("href"));
+                let goto = getUri($(a).attr("href"));
                 if (goto == "")
                     return;
-                pet_id = (_c = (_a = name_re.exec(goto)) === null || _a === void 0 ? void 0 : _a[1]) !== null && _c !== void 0 ? _c : "";
+                pet_id = (_c = (_b = name_re.exec(goto)) === null || _b === void 0 ? void 0 : _b[1]) !== null && _c !== void 0 ? _c : "";
             });
-            // HP and EXP are presented as "current/max"
-            var hp = goat_def[13].split("/");
-            var exp = goat_def[11].split("/");
-            var goat = {
+            const goat = {
                 id: pet_id,
                 name: goat_def[0],
                 portait: getUri($(e).find("img").attr("src")),
-                level: parseSepInt(goat_def[9]),
-                current_exp: parseSepInt(exp[0]),
-                max_exp: parseSepInt(exp[1]),
-                current_hp: parseSepInt(hp[0]),
-                max_hp: parseSepInt(hp[1]),
-                str: parseSepInt(goat_def[15]),
-                def: parseSepInt(goat_def[17]),
-                int: parseSepInt(goat_def[19]),
-                spd: parseSepInt(goat_def[21]),
-                hunger: parseSepInt(goat_def[23].split("/")[0]),
-                mood: parseSepInt(goat_def[25].split("/")[0]),
-                wins: parseSepInt(goat_def[27]),
-                losses: parseSepInt(goat_def[29]),
+                level: -1,
+                current_exp: -1,
+                max_exp: -1,
+                current_hp: -1,
+                max_hp: -1,
+                str: -1,
+                def: -1,
+                int: -1,
+                spd: -1,
+                hunger: -1,
+                mood: -1,
+                wins: -1,
+                losses: -1,
             };
-            console.log("Goat:", goat);
+            goat_def.forEach((what, i) => {
+                var _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+                switch (what.toLowerCase()) {
+                    case "level":
+                    case "level:": {
+                        goat.level = parseSepInt(goat_def[i + 1]);
+                    }
+                    case "exp":
+                    case "exp:": {
+                        const exp = (_b = goat_def[i + 1].split("/")) !== null && _b !== void 0 ? _b : [];
+                        goat.max_exp = parseSepInt((_c = exp[1]) !== null && _c !== void 0 ? _c : "-1");
+                        goat.current_exp = parseSepInt((_d = exp[0]) !== null && _d !== void 0 ? _d : "-1");
+                    }
+                    case "hp":
+                    case "hp:": {
+                        const hp = (_e = goat_def[i + 1].split("/")) !== null && _e !== void 0 ? _e : [];
+                        goat.max_hp = parseSepInt((_f = hp[1]) !== null && _f !== void 0 ? _f : "-1");
+                        goat.current_hp = parseSepInt((_g = hp[0]) !== null && _g !== void 0 ? _g : "-1");
+                    }
+                    case "strength":
+                    case "strength:": {
+                        goat.str = parseSepInt(goat_def[i + 1]);
+                    }
+                    case "defense":
+                    case "defense:": {
+                        goat.def = parseSepInt(goat_def[i + 1]);
+                    }
+                    case "intelligence":
+                    case "intelligence:": {
+                        goat.int = parseSepInt(goat_def[i + 1]);
+                    }
+                    case "speed":
+                    case "speed:": {
+                        goat.spd = parseSepInt(goat_def[i + 1]);
+                    }
+                    case "hunger":
+                    case "hunger:": {
+                        goat.hunger = parseSepInt((_j = (_h = goat_def[i + 1].split("/")) === null || _h === void 0 ? void 0 : _h[1]) !== null && _j !== void 0 ? _j : "-1");
+                    }
+                    case "mood":
+                    case "mood:": {
+                        goat.mood = parseSepInt((_l = (_k = goat_def[i + 1].split("/")) === null || _k === void 0 ? void 0 : _k[1]) !== null && _l !== void 0 ? _l : "-1");
+                    }
+                    case "wins":
+                    case "wins:": {
+                        goat.wins = parseSepInt(goat_def[i + 1]);
+                    }
+                    case "losses":
+                    case "losses:": {
+                        goat.losses = parseSepInt(goat_def[i + 1]);
+                    }
+                }
+            });
+            this.logDebug("Parsed goat: ", goat);
             goatlings[goat.name] = goat;
         });
         return goatlings;
-    };
-    User.prototype.updateGoatlingTabsActual = function (tabs) {
-        var _this = this;
+    }
+    updateGoatlingTabsActual(tabs) {
         this.__tabs = [];
-        $(tabs).find("div.pv-cat > p > a").each(function (_, e) {
-            var _a, _c;
+        $(tabs).find("div.pv-cat > p > a").each((_, e) => {
+            var _b, _c;
             // If there's an img present, then the name is not present
             if ($(e).find("img").length > 0)
                 return;
             // Parse the Tab ID from the link URL
-            var uri = getUri($(e).attr("href"));
-            var found = (_a = /\/manage\/(\d+)/.exec(uri)) !== null && _a !== void 0 ? _a : [];
-            var tid = parseInt((_c = found[1]) !== null && _c !== void 0 ? _c : "");
+            let uri = getUri($(e).attr("href"));
+            let found = (_b = /\/manage\/(\d+)/.exec(uri)) !== null && _b !== void 0 ? _b : [];
+            let tid = parseInt((_c = found[1]) !== null && _c !== void 0 ? _c : "");
             // Filter out non-tab URLs
             if (!found[1] || Number.isNaN(tid))
                 return;
-            var tab = {
+            let tab = {
                 id: tid,
                 name: $(e).text()
             };
-            _this.__tabs.push(tab);
+            this.__tabs.push(tab);
         });
-    };
+    }
     /**
      *
      */
-    User.prototype.updateGoatlingTabs = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            return __generator(this, function (_a) {
-                this.logInfo("Updating goatling tabs ...");
-                if (getUri() == "/MyGoatlings") {
-                    this.updateGoatlingTabsActual($("div#wrapper > div#content > form"));
+    updateGoatlingTabs() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.logInfo("Updating goatling tabs ...");
+            if (getUri() == "/MyGoatlings") {
+                this.updateGoatlingTabsActual($("div#wrapper > div#content > form"));
+                this.logDebug("updateGoatlingTabs() Finished update");
+                localStorage.setItem(`${this.uuid}_tabs`, JSON.stringify(this.__tabs));
+                return;
+            }
+            $.ajax({
+                url: `${PAGE}/MyGoatlings`,
+                async: false,
+                success: (data) => {
+                    this.updateGoatlingTabsActual($(data).find("div"));
                     this.logDebug("updateGoatlingTabs() Finished update");
-                    localStorage.setItem("".concat(this.uuid, "_tabs"), JSON.stringify(this.__tabs));
-                    return [2 /*return*/];
-                }
-                $.ajax({
-                    url: "".concat(PAGE, "/MyGoatlings"),
-                    async: true,
-                    success: function (data) {
-                        _this.updateGoatlingTabsActual($(data).find("div"));
-                        _this.logDebug("updateGoatlingTabs() Finished update");
-                        localStorage.setItem("".concat(_this.uuid, "_tabs"), JSON.stringify(_this.__tabs));
-                    },
-                });
-                return [2 /*return*/];
+                    localStorage.setItem(`${this.uuid}_tabs`, JSON.stringify(this.__tabs));
+                },
             });
         });
-    };
+    }
     /**
      * Update a users registered Goatlings
      * @param skipTabs Skip updating tabs when updating goatlings
      * @param whichTab Update goatlings from a specific tab
      */
-    User.prototype.updateGoatlings = function () {
-        return __awaiter(this, arguments, void 0, function (skipTabs, whichTab) {
-            var tabJobs, _i, tabJobs_1, tab;
-            var _this = this;
-            if (skipTabs === void 0) { skipTabs = false; }
-            if (whichTab === void 0) { whichTab = -1; }
-            return __generator(this, function (_a) {
-                if (!skipTabs)
-                    this.updateGoatlingTabs();
-                this.logDebug(this);
-                if (typeof this.__tabs === "undefined")
-                    this.updateGoatlingTabs();
-                tabJobs = this.__tabs;
-                if (whichTab > -1) {
-                    tabJobs = this.__tabs.filter(function (t) { return t.id === whichTab; });
+    updateGoatlings() {
+        return __awaiter(this, arguments, void 0, function* (skipTabs = false, whichTab = -1) {
+            if (!skipTabs)
+                this.updateGoatlingTabs();
+            this.logDebug(this);
+            if (typeof this.__tabs === "undefined")
+                this.updateGoatlingTabs();
+            let tabJobs = this.__tabs;
+            if (whichTab > -1) {
+                tabJobs = this.__tabs.filter((t) => t.id === whichTab);
+            }
+            this.logDebug("Fetching goatlings from tabs:", tabJobs, this.__tabs);
+            this.logInfo("Updating goatlings ...");
+            let new_goats = {};
+            for (var tab of tabJobs) {
+                if (getUri() == `/MyGoatlings/manage/${tab.id}`) {
+                    new_goats = Object.assign(Object.assign({}, this.updateGoatlingsActual($("div.mystuff"))), new_goats);
+                    this.logDebug("updateGoatlings() Finished update");
+                    return;
                 }
-                this.logDebug("Fetching goatlings from tabs:", tabJobs, this.__tabs);
-                this.logInfo("Updating goatlings ...");
-                for (_i = 0, tabJobs_1 = tabJobs; _i < tabJobs_1.length; _i++) {
-                    tab = tabJobs_1[_i];
-                    if (getUri() == "/MyGoatlings/manage/".concat(tab.id)) {
-                        this.__goatlings = __assign(__assign({}, this.updateGoatlingsActual($("div.mystuff"))), this.__goatlings);
-                        localStorage.setItem("".concat(this.uuid, "_goatlings"), JSON.stringify(this.__goatlings));
+                $.ajax({
+                    url: `${PAGE}/MyGoatlings/manage/${tab.id}`,
+                    async: false,
+                    success: (data) => {
+                        new_goats = Object.assign(Object.assign({}, this.updateGoatlingsActual($(data).find("div.mystuff"))), new_goats);
                         this.logDebug("updateGoatlings() Finished update");
-                        return [2 /*return*/];
-                    }
-                    $.ajax({
-                        url: "".concat(PAGE, "/MyGoatlings/manage/").concat(tab.id),
-                        async: true,
-                        success: function (data) {
-                            _this.__goatlings = __assign(__assign({}, _this.updateGoatlingsActual($(data).find("div.mystuff"))), _this.__goatlings);
-                            localStorage.setItem("".concat(_this.uuid, "_goatlings"), JSON.stringify(_this.__goatlings));
-                            _this.logDebug("updateGoatlings() Finished update");
-                        },
-                    });
-                }
-                localStorage.setItem("".concat(this.uuid, "_goatlings_last_update"), "".concat(Math.floor(Date.now() / 1000)));
-                return [2 /*return*/];
-            });
+                    },
+                });
+            }
+            this.__goatlings = new_goats;
+            localStorage.setItem(`${this.uuid}_goatlings`, JSON.stringify(this.__goatlings));
+            localStorage.setItem(`${this.uuid}_goatlings_last_update`, `${Math.floor(Date.now() / 1000)}`);
         });
-    };
+    }
     /**
      * Determine whether or not the last user update has expired for a given field
      */
-    User.prototype.checkNeedsUpdate = function (what) {
-        return __awaiter(this, void 0, void 0, function () {
-            var now, last;
-            var _a;
-            return __generator(this, function (_c) {
-                now = Math.floor(Date.now() / 1000);
-                last = Math.floor(parseSepInt((_a = localStorage.getItem("".concat(this.uuid, "_").concat(what, "_last_update"))) !== null && _a !== void 0 ? _a : "0"));
-                if (now - last >= User.UPDATE_WAIT_TIME)
-                    return [2 /*return*/, true];
-                return [2 /*return*/, false];
-            });
+    checkNeedsUpdate(what) {
+        return __awaiter(this, void 0, void 0, function* () {
+            var _b;
+            if (!this.__goatlings || Object.keys(this.__goatlings).length < 1)
+                return true;
+            if (!this.__tabs || this.__tabs.length < 1)
+                return true;
+            let now = Math.floor(Date.now() / 1000);
+            let last = Math.floor(parseSepInt((_b = localStorage.getItem(`${this.uuid}_${what}_last_update`)) !== null && _b !== void 0 ? _b : "0"));
+            if (now - last >= User.UPDATE_WAIT_TIME)
+                return true;
+            return false;
         });
-    };
-    User.prototype.doUpdate = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        this.logInfo("Update triggered ...");
-                        return [4 /*yield*/, this.checkNeedsUpdate("goatlings")];
-                    case 1:
-                        if (_a.sent())
-                            this.updateGoatlings();
-                        return [2 /*return*/];
-                }
-            });
+    }
+    doUpdate() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.logInfo("Update triggered ...");
+            if (!this.name)
+                return;
+            if (yield this.checkNeedsUpdate("goatlings"))
+                this.updateGoatlings();
         });
-    };
-    User.UPDATE_WAIT_TIME = 60 * 60 * 1;
-    return User;
-}(Logger));
+    }
+}
+User.UPDATE_WAIT_TIME = 60 * 60 * 1;
 /**
  * Represents a mod that this userscript is injecting
  */
-var Mod = /** @class */ (function (_super) {
-    __extends(Mod, _super);
-    function Mod(name) {
-        var _this = _super.call(this, function () {
-            return "Mod[".concat(name, "]");
-        }) || this;
-        _this.name = "";
+class Mod extends Logger {
+    get user() {
+        return Mod.user;
+    }
+    constructor(name) {
+        super(() => {
+            return `Mod[${name}]`;
+        });
+        this.name = "";
         /**Acceptable URIs - or URI matches - that this may run on */
-        _this.runsOn = [];
-        _this.name = name;
-        _this.enabled = true;
-        _this.onActivate = function () { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, true];
-            });
-        }); };
-        _this.onPreload = function () {
+        this.runsOn = [];
+        this.name = name;
+        this.enabled = true;
+        this.onActivate = () => __awaiter(this, void 0, void 0, function* () {
+            return true;
+        });
+        this.onPreload = () => {
             return true;
         };
-        return _this;
     }
-    Object.defineProperty(Mod.prototype, "user", {
-        get: function () {
-            return Mod.user;
-        },
-        enumerable: false,
-        configurable: true
-    });
     /**
      * Activates the main body of the mod
      *
      * Only permits running the mod if it's enable and the current page is one that
      * this mod is permitted to run on
      */
-    Mod.prototype.activate = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var pageUri, canRun, _i, _a, uri;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
-                    case 0:
-                        if (!this.enabled)
-                            return [2 /*return*/, this.logDebug("Not enabled, skipping")];
-                        pageUri = getUri();
-                        if (this.runsOn.length > 0) {
-                            canRun = false;
-                            for (_i = 0, _a = this.runsOn; _i < _a.length; _i++) {
-                                uri = _a[_i];
-                                if (uri instanceof RegExp) {
-                                    if (!uri.test(pageUri))
-                                        continue;
-                                    canRun = true;
-                                    break;
-                                }
-                                if (typeof uri === "string") {
-                                    if (!pageUri.startsWith(uri))
-                                        continue;
-                                    canRun = true;
-                                    break;
-                                }
-                            }
-                            if (!canRun)
-                                return [2 /*return*/, this.logDebug("Can't run on this page")];
-                        }
-                        return [4 /*yield*/, this.onActivate(this)];
-                    case 1:
-                        if (!(_c.sent()))
-                            this.logDebug("Didn't activate");
-                        return [2 /*return*/];
+    activate() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.enabled)
+                return this.logDebug("Not enabled, skipping");
+            const pageUri = getUri();
+            if (this.runsOn.length > 0) {
+                let canRun = false;
+                for (const uri of this.runsOn) {
+                    if (uri instanceof RegExp) {
+                        if (!uri.test(pageUri))
+                            continue;
+                        canRun = true;
+                        break;
+                    }
+                    if (typeof uri === "string") {
+                        if (!pageUri.startsWith(uri))
+                            continue;
+                        canRun = true;
+                        break;
+                    }
                 }
-            });
+                if (!canRun)
+                    return this.logDebug("Can't run on this page");
+            }
+            if (!(yield this.onActivate(this)))
+                this.logDebug("Didn't activate");
         });
-    };
+    }
     /**
      * Run a given function against each mod
      */
-    Mod.each = function (fn) {
-        for (var _i = 0, _a = this.__all; _i < _a.length; _i++) {
-            var cls = _a[_i];
+    static each(fn) {
+        for (const cls of this.__all)
             fn(cls);
-        }
-    };
+    }
     /**
      * Create a new mod, and add it to the list of mods
      * @param name Name of the mod
      * @param init Initialization function
      */
-    Mod.create = function (name, init) {
-        var m = new Mod(name);
+    static create(name, init) {
+        const m = new Mod(name);
         init(m);
         this.__all.push(m);
-        var canRun = true;
+        let canRun = true;
         if (m.runsOn.length > 0) {
             canRun = false;
-            var pageUri = getUri();
-            for (var _i = 0, _a = m.runsOn; _i < _a.length; _i++) {
-                var uri = _a[_i];
+            const pageUri = getUri();
+            for (const uri of m.runsOn) {
                 if (uri instanceof RegExp) {
                     if (!uri.test(pageUri))
                         continue;
@@ -762,221 +687,493 @@ var Mod = /** @class */ (function (_super) {
             m.onPreload(m);
         }
         return m;
-    };
+    }
     /**
      * Activate all mods
      */
-    Mod.activateAll = function () {
-        Mod.each(function (mod) {
+    static activateAll() {
+        Mod.each((mod) => {
             mod.activate();
         });
-    };
-    Mod.__all = [];
-    Mod.user = null;
-    return Mod;
-}(Logger));
-Style.add(/*css*/ "\n  .gt-header {\n    background: %CLR_PRIMARY;\n    color: %CLR_BACKGROUND;\n    float: right;\n    width: 772px;\n    margin-left: 5;\n    margin-right: 5;\n    margin-bottom: 0;\n    padding: 5px;\n    font-weight: bold;\n    border-radius: 4px 4px 0px 0px;\n    display: flex;\n    \n    & hr {\n      width: 1;\n      border-left: 1px solid %CLR_BACKGROUND;\n      height: 100%;\n    }\n    \n    & .header-option:hover {\n      cursor: pointer;\n    }\n\n    & .selected {\n      text-decoration: underline;\n    }\n  }\n");
+    }
+}
+Mod.__all = [];
+Mod.user = null;
+Style.add(/*css*/ `
+  .gt-header {
+    background: %CLR_PRIMARY;
+    color: %CLR_BACKGROUND;
+    float: right;
+    width: 772px;
+    margin-left: 5;
+    margin-right: 5;
+    margin-bottom: 0;
+    padding: 5px;
+    font-weight: bold;
+    border-radius: 4px 4px 0px 0px;
+    display: flex;
+    
+    & hr {
+      width: 1;
+      border-left: 1px solid %CLR_BACKGROUND;
+      height: 100%;
+    }
+    
+    & .header-option:hover {
+      cursor: pointer;
+    }
+
+    & .selected {
+      text-decoration: underline;
+    }
+  }
+`);
 // Shows the lowest haggle-able price for a shop object
-Mod.create("hagglePrice", function (mod) {
+Mod.create("hagglePrice", (mod) => {
     mod.runsOn = ["/shops/viewa"];
-    mod.onPreload = function () {
-        Style.add(".gt-haggle-price { margin: 5px }");
+    mod.onPreload = () => {
+        Style.add(`.gt-haggle-price { margin: 5px }`);
     };
-    mod.onActivate = function () { return __awaiter(_this, void 0, void 0, function () {
-        var text, priceText, price;
-        return __generator(this, function (_a) {
-            text = $("#content > center").text();
-            if (!text || /This item is sold out/i.test(text))
-                return [2 /*return*/, false];
-            priceText = /To purchase this item, enter a price close to ([\d,]+) Sugar Stars/.exec(text);
-            if (!priceText)
-                return [2 /*return*/, false];
-            price = parseSepInt(priceText[1].replace(",", ""));
-            if (price == 0)
-                return [2 /*return*/, false];
-            $("#content > center > form").before("\n      <div class=\"gt-haggle-price\">Haggle price: <b>".concat(price * 0.8, "</b></div><br>\n    "));
-            return [2 /*return*/, true];
-        });
-    }); };
+    mod.onActivate = () => __awaiter(this, void 0, void 0, function* () {
+        let text = $("#content > center").text();
+        if (!text || /This item is sold out/i.test(text))
+            return false;
+        let priceText = /To purchase this item, enter a price close to ([\d,]+) Sugar Stars/.exec(text);
+        if (!priceText)
+            return false;
+        let price = parseSepInt(priceText[1].replace(",", ""));
+        if (price == 0)
+            return false;
+        $("#content > center > form").before(`
+      <div class="gt-haggle-price">Haggle price: <b>${price * 0.8}</b></div><br>
+    `);
+        return true;
+    });
 });
 // Overhauls the sidebar placement
-Mod.create("sidebarOverhaul", function (mod) { return __awaiter(_this, void 0, void 0, function () {
-    var _this = this;
-    return __generator(this, function (_a) {
-        mod.onPreload = function () {
-            Style.add(/*css*/ "\n      div#sidebar {\n        background-color: %CLR_BACKGROUND;\n        border: 1px solid %CLR_PRIMARY;\n        border-radius: 4px 4px 4px 4px;\n        position: relative;\n        width: 125px;\n        margin: 5px;\n        & form {\n          margin: 0;\n        }\n      }\n    ");
-        };
-        mod.onActivate = function () { return __awaiter(_this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                $("div#sidebar > p.navlink > a").each(function (_, e) {
-                    var _a;
-                    var goto = getUri($(e).attr("href"));
-                    switch (goto) {
-                        case "/townmap":
-                        case "/townmap/": {
-                            $(e).parent().remove();
-                            break;
-                        }
-                        case (_a = goto.match(/^\/login\/logout/)) === null || _a === void 0 ? void 0 : _a.input: {
-                            $(e).parent().remove();
-                            break;
-                        }
-                    }
-                });
-                return [2 /*return*/, true];
-            });
-        }); };
-        return [2 /*return*/];
+Mod.create("sidebarOverhaul", (mod) => __awaiter(this, void 0, void 0, function* () {
+    mod.onPreload = () => {
+        Style.add(/*css*/ `
+      div#sidebar {
+        background-color: %CLR_BACKGROUND;
+        border: 1px solid %CLR_PRIMARY;
+        border-radius: 4px 4px 4px 4px;
+        position: relative;
+        width: 125px;
+        margin: 5px;
+        & form {
+          margin: 0;
+        }
+      }
+    `);
+    };
+    mod.onActivate = () => __awaiter(this, void 0, void 0, function* () {
+        $("div#sidebar > p.navlink > a").each((_, e) => {
+            var _b;
+            let goto = getUri($(e).attr("href"));
+            switch (goto) {
+                case `/townmap`:
+                case `/townmap/`: {
+                    $(e).parent().remove();
+                    break;
+                }
+                case (_b = goto.match(/^\/login\/logout/)) === null || _b === void 0 ? void 0 : _b.input: {
+                    $(e).parent().remove();
+                    break;
+                }
+            }
+        });
+        return true;
     });
-}); });
-Mod.create("pageUpdates", function (mod) {
+}));
+Mod.create("pageUpdates", (mod) => {
     mod.runsOn = [
         "/MyGoatlings",
         "/MyGoatlings/manage",
         "/battle/over",
         "/inventory/view_action",
     ];
-    mod.onActivate = function () { return __awaiter(_this, void 0, void 0, function () {
-        var doUpdate, uri, skipTabs, whichTab;
-        var _a, _c, _d, _e;
-        return __generator(this, function (_f) {
-            doUpdate = false;
-            uri = getUri();
-            skipTabs = false;
-            whichTab = -1;
-            switch (true) {
-                case uri.startsWith("/MyGoatlings/manage"): {
-                    whichTab = parseInt((_c = (_a = /^\/MyGoatlings\/manage\/([0-9]+)/.exec(uri)) === null || _a === void 0 ? void 0 : _a[1]) !== null && _c !== void 0 ? _c : "-1");
-                    if (whichTab > -1) {
-                        skipTabs = true;
+    mod.onActivate = () => __awaiter(this, void 0, void 0, function* () {
+        var _b, _c, _d, _e;
+        let doUpdate = false;
+        const uri = getUri();
+        let skipTabs = false;
+        let whichTab = -1;
+        switch (true) {
+            case uri.startsWith("/MyGoatlings/manage"): {
+                whichTab = parseInt((_c = (_b = /^\/MyGoatlings\/manage\/([0-9]+)/.exec(uri)) === null || _b === void 0 ? void 0 : _b[1]) !== null && _c !== void 0 ? _c : "-1");
+                if (whichTab > -1) {
+                    skipTabs = true;
+                    doUpdate = true;
+                }
+                break;
+            }
+            case uri == "/MyGoatlings": {
+                (_d = mod.user) === null || _d === void 0 ? void 0 : _d.updateGoatlingTabs();
+                break;
+            }
+            case uri.startsWith("/battle/over"): {
+                if (/The battle is over/.test($("div#content").text()))
+                    doUpdate = true;
+                break;
+            }
+            case uri.startsWith("/inventory/view_action"): {
+                $("div#content").each((_, e) => {
+                    if (doUpdate)
+                        return;
+                    let text = $(e).text();
+                    if (/Their [^\s]+ increased by/.test(text) ||
+                        /has their hp healed/.test(text) ||
+                        /Mood ([+-][\d]+)/.test(text))
                         doUpdate = true;
-                    }
-                    break;
-                }
-                case uri == "/MyGoatlings": {
-                    (_d = mod.user) === null || _d === void 0 ? void 0 : _d.updateGoatlingTabs();
-                    break;
-                }
-                case uri.startsWith("/battle/over"): {
-                    if (/The battle is over/.test($("div#content").text()))
-                        doUpdate = true;
-                    break;
-                }
-                case uri.startsWith("/inventory/view_action"): {
-                    $("div#content").each(function (_, e) {
-                        if (doUpdate)
-                            return;
-                        var text = $(e).text();
-                        if (/Their [^\s]+ increased by/.test(text) ||
-                            /has their hp healed/.test(text) ||
-                            /Mood ([+-][\d]+)/.test(text))
-                            doUpdate = true;
-                    });
-                    break;
-                }
-                default: {
-                    return [2 /*return*/, false];
-                }
+                });
+                break;
             }
-            if (doUpdate)
-                (_e = mod.user) === null || _e === void 0 ? void 0 : _e.updateGoatlings(skipTabs, whichTab);
-            return [2 /*return*/, true];
-        });
-    }); };
+            default: {
+                return false;
+            }
+        }
+        if (doUpdate)
+            (_e = mod.user) === null || _e === void 0 ? void 0 : _e.updateGoatlings(skipTabs, whichTab);
+        return true;
+    });
 });
-Mod.create("quickbar", function (mod) {
-    mod.onPreload = function () {
-        Style.add(/*css*/ "\n      #gt-quickbar {\n        margin: 5px;\n        padding: 5px;\n        border-radius: 4px 4px 4px 4px;\n        border: 1px solid %CLR_PRIMARY;\n        position: relative;\n        width: 771px;\n        float: right;\n        background: linear-gradient(to bottom, %CLR_PRIMARY 23%, %CLR_BACKGROUND 23%);\n  \n        & b {\n          color: %CLR_PRIMARY;\n        }\n      \n        & hr {\n          height: 1px;\n          border: 0px;\n          background-color: %CLR_PRIMARY;\n        }\n      \n        & div.shoparea>a>img {\n          height: 50px;\n        }\n      \n        & div.sep {\n          border-left: 1px solid %CLR_PRIMARY;\n          padding-left: 15px;\n        }\n      \n        & div.rsep {\n          border-right: 1px solid %CLR_PRIMARY;\n          padding-right: 15px;\n        }\n      \n        & span.newevent {\n          border-left: 1px solid %CLR_BACKGROUND;\n          padding-left: 5px;\n          & a:link, a:visited, a:hover, a:active {\n            color: %CLR_BACKGROUND;\n          }\n        }\n  \n        & div.linkmenu {\n          display: inline-block;\n          vertical-align: top;\n          margin: 5px;\n          font-size: 1em;\n          line-height: 1.1;\n  \n          & a:link, a:visited {\n            color: %CLR_PRIMARY;\n          }\n  \n          & a:hover, a:active {\n            color: %CLR_ACCENT;\n          }\n        }\n  \n        & span.goattime {\n          font-weight: bold;\n          color: %CLR_BACKGROUND;\n  \n          & a:link, a:visited, a:hover, a:active {\n            color: %CLR_BACKGROUND;\n          }\n        }\n  \n        & div.user-info {\n          justify-content: middle;\n          float: right;\n          position: absolute;\n          font-weight: bold;\n          color: %CLR_BACKGROUND;\n      \n          margin: 5px;\n          top: 0;\n          right: 0;\n      \n          & img {\n            width: 12px;\n          }\n  \n          & .sep {\n            border-left: 1px solid %CLR_BACKGROUND;\n            padding-left: 5px;\n          }\n        \n          & .rsep {\n            border-right: 1px solid %CLR_BACKGROUND;\n            padding-right: 5px;\n          }\n  \n          & a:link, a:visited, a:hover, a:active {\n            color: %CLR_BACKGROUND;\n          }\n        }\n      }\n  \n      #gt-quickbar.loggedout {\n        background: %CLR_PRIMARY;\n        height: 1.2em;\n        & div, hr {\n          display: none;\n        }\n      }\n    ");
+Mod.create("quickbar", (mod) => {
+    mod.onPreload = () => {
+        Style.add(/*css*/ `
+      #gt-quickbar {
+        margin: 5px;
+        padding: 5px;
+        border-radius: 4px 4px 4px 4px;
+        border: 1px solid %CLR_PRIMARY;
+        position: relative;
+        width: 771px;
+        float: right;
+        background: linear-gradient(to bottom, %CLR_PRIMARY 23%, %CLR_BACKGROUND 23%);
+  
+        & b {
+          color: %CLR_PRIMARY;
+        }
+      
+        & hr {
+          height: 1px;
+          border: 0px;
+          background-color: %CLR_PRIMARY;
+        }
+      
+        & div.shoparea>a>img {
+          height: 50px;
+        }
+      
+        & div.sep {
+          border-left: 1px solid %CLR_PRIMARY;
+          padding-left: 15px;
+        }
+      
+        & div.rsep {
+          border-right: 1px solid %CLR_PRIMARY;
+          padding-right: 15px;
+        }
+      
+        & span.newevent {
+          border-left: 1px solid %CLR_BACKGROUND;
+          padding-left: 5px;
+          & a:link, a:visited, a:hover, a:active {
+            color: %CLR_BACKGROUND;
+          }
+        }
+  
+        & div.linkmenu {
+          display: inline-block;
+          vertical-align: top;
+          margin: 5px;
+          font-size: 1em;
+          line-height: 1.1;
+  
+          & a:link, a:visited {
+            color: %CLR_PRIMARY;
+          }
+  
+          & a:hover, a:active {
+            color: %CLR_ACCENT;
+          }
+        }
+  
+        & span.goattime {
+          font-weight: bold;
+          color: %CLR_BACKGROUND;
+  
+          & a:link, a:visited, a:hover, a:active {
+            color: %CLR_BACKGROUND;
+          }
+        }
+  
+        & div.user-info {
+          justify-content: middle;
+          float: right;
+          position: absolute;
+          font-weight: bold;
+          color: %CLR_BACKGROUND;
+      
+          margin: 5px;
+          top: 0;
+          right: 0;
+      
+          & img {
+            width: 12px;
+          }
+  
+          & .sep {
+            border-left: 1px solid %CLR_BACKGROUND;
+            padding-left: 5px;
+          }
+        
+          & .rsep {
+            border-right: 1px solid %CLR_BACKGROUND;
+            padding-right: 5px;
+          }
+  
+          & a:link, a:visited, a:hover, a:active {
+            color: %CLR_BACKGROUND;
+          }
+        }
+      }
+  
+      #gt-quickbar.loggedout {
+        background: %CLR_PRIMARY;
+        height: 1.2em;
+        & div, hr {
+          display: none;
+        }
+      }
+    `);
     };
-    mod.onActivate = function (m) { return __awaiter(_this, void 0, void 0, function () {
-        var goat_time, user_login_or_register, user_pfx_element, new_event, user_info, logout_link, pfx, quickbar_element;
-        var _a, _c;
-        return __generator(this, function (_d) {
-            goat_time = $("#user-info > span.small-text").text();
-            user_login_or_register = "";
-            user_pfx_element = "";
-            new_event = "";
-            user_info = "";
-            logout_link = "";
-            if ($("div#content > .event")[0]) {
-                // Only remove the first instance. On /events, each possible event is also
-                // given the event class, and we only want to remove the header event
-                $("div#content > .event")[0].remove();
-                new_event = "<span class=\"newevent\"><a href=\"/events\">You have a new event!</a></>";
-            }
-            if (m.user) {
-                pfx = (_a = m.user) === null || _a === void 0 ? void 0 : _a.prefix;
-                if (pfx)
-                    user_pfx_element = "<img src=\"".concat(pfx, "\">");
-                user_info = "<div class=\"user-info\">\n          <span>Welcome ".concat(user_pfx_element, "<a href=\"/profile/u/").concat((_c = m.user) === null || _c === void 0 ? void 0 : _c.uuid, "\">").concat(m.user.name, "</a></span>\n          <span class=\"sep\"><a href=\"/mail/index/\"><img src=\"").concat(RES.image.mail, "\"></a></span>\n          <span class=\"sep\"><a href=\"/cashshop\">").concat(m.user.daimonddust, " <img src=\"").concat(RES.image.dd3, "\"></a></span>\n          <span class=\"sep\"><a href=\"/bank\">").concat(m.user.sugarstars, " <img src=\"").concat(RES.image.sugarstars, "\"></a></span>\n        </div>");
-                logout_link = "<a href=\"/login/logout/".concat(m.user.csrf, "\">Logout</a><br>");
-            }
-            else {
-                user_login_or_register = "- Welcome (<u><a href=\"/login/\">Login</a></u> or <u><a href=\"/register/\">Register</a></u>)";
-            }
-            quickbar_element = "<div id=\"gt-quickbar\">\n        <span class=\"goattime\">".concat(goat_time).concat(user_login_or_register, "</span>\n        \n        ").concat(new_event, "\n        ").concat(user_info, "\n        \n        <hr>\n\n        <div class=\"shoparea\"><a href=\"/EventCalendar\"><img title=\"Event Calendar\" src=\"/images/shops/CommunityCenterEventCalendar.gif\"></a><br><b>Calendar</b></div>\n        <div class=\"shoparea sep\"><a href=\"/shops/view/10\"><img title=\"General Foods\" src=\"/images/shops/GeneralFoods.gif\"></a><br><b>General Foods</b></div>\n        <div class=\"shoparea\"><a href=\"/shops/view/1\"><img title=\"Toy Shop\" src=\"/images/shops/ToyShop.gif\"></a><br><b>Toy Shop</b></div>\n\n        <div class=\"shoparea\"><a href=\"/shops/view/8\"><img title=\"Battle Weapons\" src=\"/images/shops/Armory.gif\"></a><br><b>Weapons</b></div>\n        <div class=\"shoparea\"><a href=\"/shops/view/26\"><img title=\"Battle Pets\" src=\"/images/shops/BattlePets.gif\"></a><br><b>Battle Pets</b></div>\n        <div class=\"shoparea\"><a href=\"/shops/view/17\"><img title=\"Battle Defense\" src=\"/images/shops/battledefence.gif\"></a><br><b>Defense</b></div>\n        <div class=\"shoparea\"><a href=\"/shops/view/7\"><img title=\"Remedies And Elixirs\" src=\"/images/shops/RemediesAndElixirs.gif\"></a><br><b>Remedies</b></div>\n\n        <div class=\"shoparea\"><a href=\"/GivingTree\"><img title=\"Giving Tree\" src=\"/images/shops/GivingTree.gif\"></a></a><br><b>Giving Tree</b></div>\n        <div class=\"shoparea rsep\"><a href=\"/pawn\"><img title=\"Pawn Shop\" src=\"/images/shops/pawnshop.gif\"></a></a><br><b>Pawn Shop</b></div>\n\n        <div class=\"linkmenu\">\n          <a href=\"/townmap/\">Town Map</a><br>\n          <a href=\"/buddies\">My Buddies</a><br>\n          <a href=\"/inventory\">My Items</a><br>\n          <a href=\"/settings\">My Settings</a><br>\n          ").concat(logout_link, "\n        </div>\n      </div>");
-            $("#header").after(quickbar_element);
-            if (!m.user)
-                $("div#gt-quickbar").addClass("loggedout");
-            $("#user-info-wrap, #user-info > br, #user-info, #user-info-points, #user-info > span.small-text").remove();
-            return [2 /*return*/, true];
-        });
-    }); };
+    mod.onActivate = (m) => __awaiter(this, void 0, void 0, function* () {
+        var _b, _c;
+        const goat_time = $("#user-info > span.small-text").text();
+        let user_login_or_register = "";
+        let user_pfx_element = "";
+        let new_event = "";
+        let user_info = "";
+        let logout_link = "";
+        if ($("div#content > .event")[0]) {
+            // Only remove the first instance. On /events, each possible event is also
+            // given the event class, and we only want to remove the header event
+            $("div#content > .event")[0].remove();
+            new_event = `<span class="newevent"><a href="/events">You have a new event!</a></>`;
+        }
+        if (m.user) {
+            const pfx = (_b = m.user) === null || _b === void 0 ? void 0 : _b.prefix;
+            if (pfx)
+                user_pfx_element = `<img src="${pfx}">`;
+            user_info = `<div class="user-info">
+          <span>Welcome ${user_pfx_element}<a href="/profile/u/${(_c = m.user) === null || _c === void 0 ? void 0 : _c.uuid}">${m.user.name}</a></span>
+          <span class="sep"><a href="/mail/index/"><img src="${RES.image.mail}"></a></span>
+          <span class="sep"><a href="/cashshop">${m.user.daimonddust} <img src="${RES.image.dd3}"></a></span>
+          <span class="sep"><a href="/bank">${m.user.sugarstars} <img src="${RES.image.sugarstars}"></a></span>
+        </div>`;
+            logout_link = `<a href="/login/logout/${m.user.csrf}">Logout</a><br>`;
+        }
+        else {
+            user_login_or_register = `- Welcome (<u><a href="/login/">Login</a></u> or <u><a href="/register/">Register</a></u>)`;
+        }
+        let quickbar_element = `<div id="gt-quickbar">
+        <span class="goattime">${goat_time}${user_login_or_register}</span>
+        
+        ${new_event}
+        ${user_info}
+        
+        <hr>
+
+        <div class="shoparea"><a href="/EventCalendar"><img title="Event Calendar" src="/images/shops/CommunityCenterEventCalendar.gif"></a><br><b>Calendar</b></div>
+        <div class="shoparea sep"><a href="/shops/view/10"><img title="General Foods" src="/images/shops/GeneralFoods.gif"></a><br><b>General Foods</b></div>
+        <div class="shoparea"><a href="/shops/view/1"><img title="Toy Shop" src="/images/shops/ToyShop.gif"></a><br><b>Toy Shop</b></div>
+
+        <div class="shoparea"><a href="/shops/view/8"><img title="Battle Weapons" src="/images/shops/Armory.gif"></a><br><b>Weapons</b></div>
+        <div class="shoparea"><a href="/shops/view/26"><img title="Battle Pets" src="/images/shops/BattlePets.gif"></a><br><b>Battle Pets</b></div>
+        <div class="shoparea"><a href="/shops/view/17"><img title="Battle Defense" src="/images/shops/battledefence.gif"></a><br><b>Defense</b></div>
+        <div class="shoparea"><a href="/shops/view/7"><img title="Remedies And Elixirs" src="/images/shops/RemediesAndElixirs.gif"></a><br><b>Remedies</b></div>
+
+        <div class="shoparea"><a href="/GivingTree"><img title="Giving Tree" src="/images/shops/GivingTree.gif"></a></a><br><b>Giving Tree</b></div>
+        <div class="shoparea rsep"><a href="/pawn"><img title="Pawn Shop" src="/images/shops/pawnshop.gif"></a></a><br><b>Pawn Shop</b></div>
+
+        <div class="linkmenu">
+          <a href="/townmap/">Town Map</a><br>
+          <a href="/buddies">My Buddies</a><br>
+          <a href="/inventory">My Items</a><br>
+          <a href="/settings">My Settings</a><br>
+          ${logout_link}
+        </div>
+      </div>`;
+        $("#header").after(quickbar_element);
+        if (!m.user)
+            $("div#gt-quickbar").addClass("loggedout");
+        $("#user-info-wrap, #user-info > br, #user-info, #user-info-points, #user-info > span.small-text").remove();
+        return true;
+    });
 });
-Mod.create("petHeader", function (mod) {
-    mod.onPreload = function () {
-        Style.add(/*css*/ "\n      div#header > div#active_pet_image {\n          right: 100px;\n      }\n      \n      div#header > div.active_pet_stats {\n          position: absolute;\n          top: 0;\n          right: 0;\n          width: 100px;\n          margin: 5px;\n          padding: 3px;\n          padding-top: 0px;\n          border-radius: 4px 4px 4px 4px;\n          border: 1px solid %CLR_PRIMARY;\n          background: linear-gradient(to bottom, %CLR_PRIMARY 16%, white 16%);\n          \n          & b {\n              color: %CLR_PRIMARY;\n          }\n          \n          & hr {\n              height: 1px;\n              border: 0px;\n              background-color: %CLR_PRIMARY;\n          }\n\n          & span { float:right; }\n\n          & span.peril {\n            color: red;\n            font-weight: bold;\n          }\n\n          & span.danger {\n            color: orange;\n            font-weight: bold;\n          }\n\n          & .stat-header {\n            line-height: 1.5;\n            color: white;\n            font-weight: bold;\n          }\n      }\n      \n      div#header > div.active_exp_bar {\n          position: absolute;\n          bottom: 0;\n          right: 0;\n          width: 106px;\n          height: 5px;\n          margin: 3px;\n          margin-right: 5px;\n          border-radius: 4px 4px 4px 4px;\n          border: 1px solid %CLR_PRIMARY;\n      }\n    ");
+Mod.create("petHeader", (mod) => {
+    mod.onPreload = () => {
+        Style.add(/*css*/ `
+      div#header > div#active_pet_image {
+          right: 100px;
+      }
+      
+      div#header > div.active_pet_stats {
+          position: absolute;
+          top: 0;
+          right: 0;
+          width: 100px;
+          margin: 5px;
+          padding: 3px;
+          padding-top: 0px;
+          border-radius: 4px 4px 4px 4px;
+          border: 1px solid %CLR_PRIMARY;
+          background: linear-gradient(to bottom, %CLR_PRIMARY 16%, white 16%);
+          
+          & b {
+              color: %CLR_PRIMARY;
+          }
+          
+          & hr {
+              height: 1px;
+              border: 0px;
+              background-color: %CLR_PRIMARY;
+          }
+
+          & span { float:right; }
+
+          & span.peril {
+            color: red;
+            font-weight: bold;
+          }
+
+          & span.danger {
+            color: orange;
+            font-weight: bold;
+          }
+
+          & .stat-header {
+            line-height: 1.5;
+            color: white;
+            font-weight: bold;
+          }
+      }
+      
+      div#header > div.active_exp_bar {
+          position: absolute;
+          bottom: 0;
+          right: 0;
+          width: 106px;
+          height: 5px;
+          margin: 3px;
+          margin-right: 5px;
+          border-radius: 4px 4px 4px 4px;
+          border: 1px solid %CLR_PRIMARY;
+      }
+    `);
     };
-    var getStatClass = function (cur, max) {
-        if (cur === void 0) { cur = 0; }
-        if (max === void 0) { max = 100; }
+    const getStatClass = (cur = 0, max = 100) => {
         cur = cur !== null && cur !== void 0 ? cur : 0;
         max = max !== null && max !== void 0 ? max : 100;
-        var ratio = cur / max;
+        let ratio = cur / max;
         if (ratio >= 0.5)
             return "normal";
         if (ratio <= 0.25)
             return "peril";
         return "danger";
     };
-    mod.onActivate = function (m) { return __awaiter(_this, void 0, void 0, function () {
-        var active, ratio, hp;
-        var _a;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
-                case 0:
-                    if (!((_a = m.user) === null || _a === void 0 ? void 0 : _a.active))
-                        return [2 /*return*/, false];
-                    return [4 /*yield*/, m.user.fetchGoatlings()];
-                case 1:
-                    active = (_c.sent())[m.user.active];
-                    if (!active)
-                        return [2 /*return*/, false];
-                    ratio = (active.current_exp / active.max_exp) * 100;
-                    hp = "".concat(active.current_hp, "/").concat(active.max_hp);
-                    $("div#header > div#active_pet_image > img")
-                        .wrap("<a href=\"/MyGoatlings\"></a>")
-                        .parent()
-                        .parent().after("\n        <div class=\"active_pet_stats\">\n          <div class=\"stat-header\">Level:  <span>".concat(active.level, "</span><br></div>\n          <b>Hp</b>:     <span class=\"").concat(getStatClass(active.current_hp, active.max_hp), "\">").concat(hp, "</span><br>\n          <b>Hunger</b>: <span class=\"").concat(getStatClass(active.hunger), "\">").concat(active.hunger, "/100</span><br>\n          <b>Mood</b>:   <span class=\"").concat(getStatClass(active.mood), "\">").concat(active.mood, "/100</span><br><hr>\n          <b>Wins</b>:   <span >").concat(active.wins, "</span><br>\n          <b>Loss</b>:   <span >").concat(active.losses, "</span><br>\n        </div>\n        <div class=\"active_exp_bar\" style=\"background: linear-gradient(to right, ").concat(Style.get("accent"), " ").concat(ratio, "%, ").concat(Style.get("background"), " ").concat(ratio, "%)\"></div>\n      "));
-                    return [2 /*return*/, true];
-            }
-        });
-    }); };
+    mod.onActivate = (m) => __awaiter(this, void 0, void 0, function* () {
+        var _b;
+        if (!((_b = m.user) === null || _b === void 0 ? void 0 : _b.active))
+            return false;
+        const active = (yield m.user.fetchGoatlings())[m.user.active];
+        if (!active)
+            return false;
+        const ratio = (active.current_exp / active.max_exp) * 100;
+        const hp = `${active.current_hp}/${active.max_hp}`;
+        $("div#header > div#active_pet_image > img")
+            .wrap(`<a href="/MyGoatlings"></a>`)
+            .parent()
+            .parent().after(`
+        <div class="active_pet_stats">
+          <div class="stat-header">Level:  <span>${active.level}</span><br></div>
+          <b>Hp</b>:     <span class="${getStatClass(active.current_hp, active.max_hp)}">${hp}</span><br>
+          <b>Hunger</b>: <span class="${getStatClass(active.hunger)}">${active.hunger}/100</span><br>
+          <b>Mood</b>:   <span class="${getStatClass(active.mood)}">${active.mood}/100</span><br><hr>
+          <b>Wins</b>:   <span >${active.wins}</span><br>
+          <b>Loss</b>:   <span >${active.losses}</span><br>
+        </div>
+        <div class="active_exp_bar" style="background: linear-gradient(to right, ${Style.get("accent")} ${ratio}%, ${Style.get("background")} ${ratio}%)"></div>
+      `);
+        return true;
+    });
 });
-Mod.create("settingsPage", function (mod) {
+Mod.create("settingsPage", (mod) => {
     mod.runsOn = ["/settings"];
     mod.enabled = false;
-    mod.onPreload = function () {
-        Style.add(/*css*/ "\n      #content.gt-settings-container {  \n        & .hidden {\n          display: none;\n        }\n  \n        & .gt-settings > span {\n          float: right;\n        }\n  \n        & #gt-tools-settings {\n          & input.submit {\n            position: absolute;\n            right: 0;\n            margin: 5;\n            top: -27;\n          }\n\n          & table {\n            border-collapse: separate;\n            display: inline-block;\n          }\n\n          & table#gt-style-settings {\n            float: left;\n          }\n\n          & table#gt-mods-enabled {\n            float: right;\n          }\n  \n          & table > tbody > tr > td:nth-child(1) {\n            padding: 5px;\n            border-radius: 4px 0px 0px 4px;\n          }\n  \n          & table > tbody > tr > td:nth-last-child(1) {\n            padding: 5px;\n            border-radius: 0px 4px 4px 0px;\n          }\n  \n          & table {\n            border-collapse: separate;\n            border-spacing: 0px 5px;\n  \n            & tbody {\n              color: %CLR_BACKGROUND;\n              background: %CLR_PRIMARY;\n            }\n          }\n        }\n      }\n    ");
+    mod.onPreload = () => {
+        Style.add(/*css*/ `
+      #content.gt-settings-container {  
+        & .hidden {
+          display: none;
+        }
+  
+        & .gt-settings > span {
+          float: right;
+        }
+  
+        & #gt-tools-settings {
+          & input.submit {
+            position: absolute;
+            right: 0;
+            margin: 5;
+            top: -27;
+          }
+
+          & table {
+            border-collapse: separate;
+            display: inline-block;
+          }
+
+          & table#gt-style-settings {
+            float: left;
+          }
+
+          & table#gt-mods-enabled {
+            float: right;
+          }
+  
+          & table > tbody > tr > td:nth-child(1) {
+            padding: 5px;
+            border-radius: 4px 0px 0px 4px;
+          }
+  
+          & table > tbody > tr > td:nth-last-child(1) {
+            padding: 5px;
+            border-radius: 0px 4px 4px 0px;
+          }
+  
+          & table {
+            border-collapse: separate;
+            border-spacing: 0px 5px;
+  
+            & tbody {
+              color: %CLR_BACKGROUND;
+              background: %CLR_PRIMARY;
+            }
+          }
+        }
+      }
+    `);
     };
-    var gtUpdateSettingFromForm = function (e) {
-        var _a, _c;
-        var updateFormArray = $(e).serializeArray();
-        var didUpdate = false;
-        for (var _i = 0, updateFormArray_1 = updateFormArray; _i < updateFormArray_1.length; _i++) {
-            var data = updateFormArray_1[_i];
+    const gtUpdateSettingFromForm = (e) => {
+        var _b, _c;
+        const updateFormArray = $(e).serializeArray();
+        let didUpdate = false;
+        for (const data of updateFormArray) {
             switch (true) {
-                case /^gt\-color\-/.test((_a = data.name) !== null && _a !== void 0 ? _a : ""): {
+                case /^gt\-color\-/.test((_b = data.name) !== null && _b !== void 0 ? _b : ""): {
                     didUpdate = gtUpdateStyle(data.name.replace(/^gt\-color\-/, ""), data.value)
                         ? true
                         : didUpdate;
@@ -997,55 +1194,154 @@ Mod.create("settingsPage", function (mod) {
     Script.add("gtUpdateStyle", gtUpdateStyle);
     Script.add("gtUpdateSetting", gtUpdateSetting);
     Script.add("gtUpdateSettingFromForm", gtUpdateSettingFromForm);
-    mod.onActivate = function () { return __awaiter(_this, void 0, void 0, function () {
-        var root, settings_root;
-        return __generator(this, function (_a) {
-            root = $("div#content");
-            root.before(/*html*/ "\n      <div class=\"gt-header\">\n        <div id=\"my-settings-select\" class=\"header-option selected\">My Settings</div>\n        &nbsp|&nbsp\n        <div id=\"gttools-select\" class=\"header-option\">Goatling Tools</div>\n      </div>\n    ");
-            $(".gt-header").after("<div id=\"content\" class=\"gt-settings-container gt-has-header\"></div>");
-            root.addClass("gt-settings").find("h2")[0].remove();
-            settings_root = $("div#content.gt-settings-container");
-            root.attr("id", "my-settings").appendTo(settings_root);
-            settings_root.append(/*html*/ "\n      <div id=\"gt-tools-settings\" class=\"gt-settings hidden\">\n        <form id=\"gt-update-settings\" onsubmit=\"return gtUpdateSettingFromForm(this)\">\n        <input class=\"submit\" type=\"image\" src=\"".concat(RES.image.save, "\" value=\"Update\" name=\"gt-submit\">\n        <table id=\"gt-style-settings\">\n          <tbody>\n            <tr>\n              <td>\n                <b>Styling options:</b><br>\n                &nbsp&nbsp<b>-</b> Colors must be a hex value <br>\n                &nbsp&nbsp<b>-</b> An empty field resets the color <br>\n              </td>\n              <td></td>\n            </tr>\n            <tr>\n              <td>Background Color</td>\n              <td><input type=\"text\" value=\"").concat(Style.get("background"), "\" name=\"gt-color-background\"></td>\n            </tr>\n\n            <tr>\n              <td>Primary Color</td>\n              <td><input type=\"text\" value=\"").concat(Style.get("primary"), "\" name=\"gt-color-primary\"></td>\n            </tr>\n\n            <tr>\n              <td>Accent Color</td>\n              <td><input type=\"text\" value=\"").concat(Style.get("accent"), "\" name=\"gt-color-accent\"></td>\n            </tr>\n          </tbody>\n        </table>\n        <!--\n        <table id=\"gt-mods-enabled\">\n          <tbody>\n            <tr>\n              <td><b>Enabled Mods</b><td>\n              <td><td>\n            </tr>\n          </tbody>\n        </table>\n        -->\n        </form>\n      </div>\n    "));
-            // const modsTable = $("table#gt-mods-enabled > tbody")
-            // let i = 0
-            // Mod.each((m: Mod) => {
-            //   modsTable.append(`
-            //     <tr>
-            //       <td>Mod[${m.name}] enabled</td>
-            //       <td>
-            //         <input type="checkbox"
-            //           value="${m.name}"
-            //           name="gt-mod-enabled-${i}"
-            //         ${m.enabled ? "checked" : ''}>
-            //       </td>
-            //     </tr>
-            //   `)
-            //   i++
-            // })
-            $("#gttools-select").on("click", function () {
-                $("#gttools-select").addClass("selected");
-                $("#my-settings-select").removeClass("selected");
-                $("#my-settings").addClass("hidden");
-                $("#gt-tools-settings").removeClass("hidden");
-            });
-            $("#my-settings-select").on("click", function () {
-                $("#my-settings-select").addClass("selected");
-                $("#gttools-select").removeClass("selected");
-                $("#gt-tools-settings").addClass("hidden");
-                $("#my-settings").removeClass("hidden");
-            });
-            return [2 /*return*/, true];
+    mod.onActivate = () => __awaiter(this, void 0, void 0, function* () {
+        const root = $("div#content");
+        root.before(/*html*/ `
+      <div class="gt-header">
+        <div id="my-settings-select" class="header-option selected">My Settings</div>
+        &nbsp|&nbsp
+        <div id="gttools-select" class="header-option">Goatling Tools</div>
+      </div>
+    `);
+        $(".gt-header").after(`<div id="content" class="gt-settings-container gt-has-header"></div>`);
+        root.addClass("gt-settings").find("h2")[0].remove();
+        const settings_root = $("div#content.gt-settings-container");
+        root.attr("id", "my-settings").appendTo(settings_root);
+        settings_root.append(/*html*/ `
+      <div id="gt-tools-settings" class="gt-settings hidden">
+        <form id="gt-update-settings" onsubmit="return gtUpdateSettingFromForm(this)">
+        <input class="submit" type="image" src="${RES.image.save}" value="Update" name="gt-submit">
+        <table id="gt-style-settings">
+          <tbody>
+            <tr>
+              <td>
+                <b>Styling options:</b><br>
+                &nbsp&nbsp<b>-</b> Colors must be a hex value <br>
+                &nbsp&nbsp<b>-</b> An empty field resets the color <br>
+              </td>
+              <td></td>
+            </tr>
+            <tr>
+              <td>Background Color</td>
+              <td><input type="text" value="${Style.get("background")}" name="gt-color-background"></td>
+            </tr>
+
+            <tr>
+              <td>Primary Color</td>
+              <td><input type="text" value="${Style.get("primary")}" name="gt-color-primary"></td>
+            </tr>
+
+            <tr>
+              <td>Accent Color</td>
+              <td><input type="text" value="${Style.get("accent")}" name="gt-color-accent"></td>
+            </tr>
+          </tbody>
+        </table>
+        <!--
+        <table id="gt-mods-enabled">
+          <tbody>
+            <tr>
+              <td><b>Enabled Mods</b><td>
+              <td><td>
+            </tr>
+          </tbody>
+        </table>
+        -->
+        </form>
+      </div>
+    `);
+        // const modsTable = $("table#gt-mods-enabled > tbody")
+        // let i = 0
+        // Mod.each((m: Mod) => {
+        //   modsTable.append(`
+        //     <tr>
+        //       <td>Mod[${m.name}] enabled</td>
+        //       <td>
+        //         <input type="checkbox"
+        //           value="${m.name}"
+        //           name="gt-mod-enabled-${i}"
+        //         ${m.enabled ? "checked" : ''}>
+        //       </td>
+        //     </tr>
+        //   `)
+        //   i++
+        // })
+        $("#gttools-select").on("click", () => {
+            $("#gttools-select").addClass("selected");
+            $("#my-settings-select").removeClass("selected");
+            $("#my-settings").addClass("hidden");
+            $("#gt-tools-settings").removeClass("hidden");
         });
-    }); };
+        $("#my-settings-select").on("click", () => {
+            $("#my-settings-select").addClass("selected");
+            $("#gttools-select").removeClass("selected");
+            $("#gt-tools-settings").addClass("hidden");
+            $("#my-settings").removeClass("hidden");
+        });
+        return true;
+    });
 });
-Mod.create("inventoryTools", function (mod) {
+Mod.create("inventoryTools", (mod) => {
     mod.runsOn = ["/inventory"];
-    mod.onPreload = function () {
-        Style.add("\n      div.gt-header {\n        justify-content: space-evenly;\n        & img {\n          margin: 0;\n          width: 14;\n        }\n        & a, a:link, a:visited, a:active {\n          color: %CLR_BACKGROUND;\n        }\n        & a:hover {\n          color: %CLR_ACCENT;\n        }\n      }\n\n      div#content {\n        text-align: center;\n      }\n\n      center > .item-invent {\n        border: 1px dotted;\n        border-color: %CLR_PRIMARY;\n        border-radius: 4px;\n        height: 95px;\n        width: 95px;\n        position: relative;\n\n        & img {\n          height: 70%;\n        }\n\n        & span.item-count {\n          position: absolute;\n          top: 0;\n          right: 0;\n          margin: 5;\n          font-size: 14;\n        }\n\n        & div.item-name {\n          border-radius: 0 0 4px 4px;\n          position: absolute;\n          bottom: 0;\n          width: 100%;\n          padding: 3 0 3 0;\n          margin: 0;\n          background: %CLR_PRIMARY;\n          color: %CLR_BACKGROUND;\n        }\n\n        & a, a:link, a:visited, a:hover, a:active {\n          color: %CLR_PRIMARY;\n        }\n      }\n    ");
+    mod.onPreload = () => {
+        Style.add(`
+      div.gt-header {
+        justify-content: space-evenly;
+        & img {
+          margin: 0;
+          width: 14;
+        }
+        & a, a:link, a:visited, a:active {
+          color: %CLR_BACKGROUND;
+        }
+        & a:hover {
+          color: %CLR_ACCENT;
+        }
+      }
+
+      div#content {
+        text-align: center;
+      }
+
+      center > .item-invent {
+        border: 1px dotted;
+        border-color: %CLR_PRIMARY;
+        border-radius: 4px;
+        height: 95px;
+        width: 95px;
+        position: relative;
+
+        & img {
+          height: 70%;
+        }
+
+        & span.item-count {
+          position: absolute;
+          top: 0;
+          right: 0;
+          margin: 5;
+          font-size: 14;
+        }
+
+        & div.item-name {
+          border-radius: 0 0 4px 4px;
+          position: absolute;
+          bottom: 0;
+          width: 100%;
+          padding: 3 0 3 0;
+          margin: 0;
+          background: %CLR_PRIMARY;
+          color: %CLR_BACKGROUND;
+        }
+
+        & a, a:link, a:visited, a:hover, a:active {
+          color: %CLR_PRIMARY;
+        }
+      }
+    `);
     };
-    var COUNT_RE = new RegExp("Total Items: ([0-9]+)$");
-    var idToRegexp = {
+    const COUNT_RE = new RegExp("Total Items: ([0-9]+)$");
+    const idToRegexp = {
         "all-items": new RegExp("^/inventory(?:/index/[0-9]+)?/?$"),
         "food-items": new RegExp("/food/?$"),
         "toy-items": new RegExp("/toy/?$"),
@@ -1061,66 +1357,190 @@ Mod.create("inventoryTools", function (mod) {
         "potion-items": new RegExp("/health_potion/?$"),
         "retired-items": new RegExp("/retired/?$"),
     };
-    mod.onActivate = function () { return __awaiter(_this, void 0, void 0, function () {
-        var root, s, uri, id;
-        return __generator(this, function (_a) {
-            root = $("div#content");
-            s = Settings.get("itemsStacked") ? 2 : 1;
-            root.before(/*html*/ "\n      <div class=\"gt-header\">\n        <div id=\"all-items\" class=\"header-option\">\n          <a href=\"/inventory/index/".concat(s, "\">All</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"food-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/food\">Food</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"toy-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/toy\">Toys</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"wearable-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/wearable\">Wearables</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"atk-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/battle_item_att\">Attacking</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"def-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/battle_item_def\">Defending</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"dodge-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/speed_inc\">Dodging</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"collect-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/collectible\">Collectibles</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"container-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/container\">Containers</a>\n        </div>\n\n        &nbsp|&nbsp\n        <div id=\"book-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/intel_inc\">Books</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div id=\"icon-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/usericon\">Icons</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div id=\"doll-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/pet_look\">Dolls</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div id=\"potion-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/health_potion\">Potions</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div id=\"retired-items\" class=\"header-option\">\n          <a href=\"/inventory/index/").concat(s, "/retired\">Retired</a>\n        </div>\n        \n        &nbsp|&nbsp\n        <div class=\"header-option\">\n          <img id=\"toggle-stack\" src=\"").concat(Settings.get("itemsStacked")
-                ? RES.image.stacked
-                : RES.image.unstacked, "\">\n        </div>\n      </div>\n    "));
-            root.addClass("gt-has-header");
-            root.find("h2")[0].remove();
-            root.find("p").slice(0, 2).remove();
-            uri = getUri();
-            for (id in idToRegexp) {
-                if (idToRegexp[id].test(uri)) {
-                    $("div.gt-header > div#" + id).addClass("selected");
-                }
+    mod.onActivate = () => __awaiter(this, void 0, void 0, function* () {
+        const root = $("div#content");
+        const s = Settings.get("itemsStacked") ? 2 : 1;
+        root.before(/*html*/ `
+      <div class="gt-header">
+        <div id="all-items" class="header-option">
+          <a href="/inventory/index/${s}">All</a>
+        </div>
+
+        &nbsp|&nbsp
+        <div id="food-items" class="header-option">
+          <a href="/inventory/index/${s}/food">Food</a>
+        </div>
+
+        &nbsp|&nbsp
+        <div id="toy-items" class="header-option">
+          <a href="/inventory/index/${s}/toy">Toys</a>
+        </div>
+
+        &nbsp|&nbsp
+        <div id="wearable-items" class="header-option">
+          <a href="/inventory/index/${s}/wearable">Wearables</a>
+        </div>
+
+        &nbsp|&nbsp
+        <div id="atk-items" class="header-option">
+          <a href="/inventory/index/${s}/battle_item_att">Attacking</a>
+        </div>
+
+        &nbsp|&nbsp
+        <div id="def-items" class="header-option">
+          <a href="/inventory/index/${s}/battle_item_def">Defending</a>
+        </div>
+
+        &nbsp|&nbsp
+        <div id="dodge-items" class="header-option">
+          <a href="/inventory/index/${s}/speed_inc">Dodging</a>
+        </div>
+
+        &nbsp|&nbsp
+        <div id="collect-items" class="header-option">
+          <a href="/inventory/index/${s}/collectible">Collectibles</a>
+        </div>
+
+        &nbsp|&nbsp
+        <div id="container-items" class="header-option">
+          <a href="/inventory/index/${s}/container">Containers</a>
+        </div>
+
+        &nbsp|&nbsp
+        <div id="book-items" class="header-option">
+          <a href="/inventory/index/${s}/intel_inc">Books</a>
+        </div>
+        
+        &nbsp|&nbsp
+        <div id="icon-items" class="header-option">
+          <a href="/inventory/index/${s}/usericon">Icons</a>
+        </div>
+        
+        &nbsp|&nbsp
+        <div id="doll-items" class="header-option">
+          <a href="/inventory/index/${s}/pet_look">Dolls</a>
+        </div>
+        
+        &nbsp|&nbsp
+        <div id="potion-items" class="header-option">
+          <a href="/inventory/index/${s}/health_potion">Potions</a>
+        </div>
+        
+        &nbsp|&nbsp
+        <div id="retired-items" class="header-option">
+          <a href="/inventory/index/${s}/retired">Retired</a>
+        </div>
+        
+        &nbsp|&nbsp
+        <div class="header-option">
+          <img id="toggle-stack" src="${Settings.get("itemsStacked")
+            ? RES.image.stacked
+            : RES.image.unstacked}">
+        </div>
+      </div>
+    `);
+        root.addClass("gt-has-header");
+        root.find("h2")[0].remove();
+        root.find("p").slice(0, 2).remove();
+        const uri = getUri();
+        for (const id in idToRegexp) {
+            if (idToRegexp[id].test(uri)) {
+                $("div.gt-header > div#" + id).addClass("selected");
             }
-            $("center > div.item-invent").each(function (_, item) {
-                var _a, _c;
-                var text = $(item).text();
-                var link = $(item).find("a")[0].href;
-                var imag = $(item).find("img")[0].src;
-                var count = parseSepInt((_c = (_a = COUNT_RE.exec(text)) === null || _a === void 0 ? void 0 : _a[1]) !== null && _c !== void 0 ? _c : "1");
-                text = text.replace(COUNT_RE, "");
-                var countElement = "";
-                if (count > 1)
-                    countElement = "<span class=\"item-count\">x".concat(count, "</span>");
-                $("div#content > center").append("\n        <div class=\"item-invent\">\n          <a href=\"".concat(getUri(link), "\">\n            <img src=\"").concat(getUri(imag), "\">\n            ").concat(countElement, "\n          </a>\n          <div class=\"item-name\">").concat(text, "</div>\n        </div>\n      "));
-                $(item).remove();
-            });
-            $("div.header-option > img#toggle-stack").on("click", function () {
-                var _a;
-                mod.logDebug("Toggling stacks!");
-                Settings.set("itemsStacked", Settings.get("itemsStacked") ? false : true);
-                // Preserve what inventory we're viewing
-                var trailing = (_a = /^\/inventory\/index\/[0-9](.+)$/.exec(uri)) === null || _a === void 0 ? void 0 : _a[1];
-                if (trailing) {
-                    mod.logDebug("Before:", "/inventory/index/".concat(Settings.get("itemsStacked") ? 2 : 1).concat(trailing));
-                    window.location.href = "/inventory/index/".concat(Settings.get("itemsStacked") ? 2 : 1).concat(trailing);
-                    return;
-                }
-                mod.logDebug("After:", "/inventory/index/".concat(Settings.get("itemsStacked") ? 2 : 1));
-                window.location.href = "/inventory/index/".concat(Settings.get("itemsStacked") ? 2 : 1);
-            });
-            return [2 /*return*/, true];
+        }
+        $("center > div.item-invent").each((_, item) => {
+            var _b, _c;
+            let text = $(item).text();
+            const link = $(item).find("a")[0].href;
+            const imag = $(item).find("img")[0].src;
+            const count = parseSepInt((_c = (_b = COUNT_RE.exec(text)) === null || _b === void 0 ? void 0 : _b[1]) !== null && _c !== void 0 ? _c : "1");
+            text = text.replace(COUNT_RE, "");
+            let countElement = "";
+            if (count > 1)
+                countElement = `<span class="item-count">x${count}</span>`;
+            $("div#content > center").append(`
+        <div class="item-invent">
+          <a href="${getUri(link)}">
+            <img src="${getUri(imag)}">
+            ${countElement}
+          </a>
+          <div class="item-name">${text}</div>
+        </div>
+      `);
+            $(item).remove();
         });
-    }); };
+        $("div.header-option > img#toggle-stack").on("click", () => {
+            var _b;
+            mod.logDebug("Toggling stacks!");
+            Settings.set("itemsStacked", Settings.get("itemsStacked") ? false : true);
+            // Preserve what inventory we're viewing
+            const trailing = (_b = /^\/inventory\/index\/[0-9](.+)$/.exec(uri)) === null || _b === void 0 ? void 0 : _b[1];
+            if (trailing) {
+                mod.logDebug("Before:", `/inventory/index/${Settings.get("itemsStacked") ? 2 : 1}${trailing}`);
+                window.location.href = `/inventory/index/${Settings.get("itemsStacked") ? 2 : 1}${trailing}`;
+                return;
+            }
+            mod.logDebug("After:", `/inventory/index/${Settings.get("itemsStacked") ? 2 : 1}`);
+            window.location.href = `/inventory/index/${Settings.get("itemsStacked") ? 2 : 1}`;
+        });
+        return true;
+    });
 });
-Style.add(/*css*/ "\n  /* Alters main content margins, and adds a border to better fit with the changes */\n  /* added by quickbar and sidebar mods */\n  div#wrapper {\n    background: none;\n\n    & div#content {\n      border: 1px solid %CLR_PRIMARY;\n      \n      width: 760px;\n      float: right;\n    }\n  }\n\n  /* Adjust the battle page content to fit better inline*/\n  #content > center > div.battle-grid {\n    padding: 0;\n  }\n\n  div#content.gt-has-header {\n    border-radius: 0px 0px 4px 4px;\n    margin-top: 0;\n  }\n");
-Mod.create("shoppingTweaks", function (mod) {
+Style.add(/*css*/ `
+  /* Alters main content margins, and adds a border to better fit with the changes */
+  /* added by quickbar and sidebar mods */
+  div#wrapper {
+    background: none;
+
+    & div#content {
+      border: 1px solid %CLR_PRIMARY;
+      
+      width: 760px;
+      float: right;
+    }
+  }
+
+  /* Adjust the battle page content to fit better inline*/
+  #content > center > div.battle-grid {
+    padding: 0;
+  }
+
+  div#content.gt-has-header {
+    border-radius: 0px 0px 4px 4px;
+    margin-top: 0;
+  }
+`);
+Mod.create("shoppingTweaks", (mod) => {
     mod.runsOn = ["/ShoppingDistrict"];
-    mod.onPreload = function () {
-        Style.add("\n      div#wrapper > div#content > center {\n        display: flex;\n        flex-wrap: wrap;\n        justify-content: center;\n        align-content: center;\n        & div.shoparea {\n          border: 1px dashed;\n          border-color: %CLR_BACKGROUND;\n          max-width: 100px;\n          display: flex;\n          padding: 0;\n          margin: 0;\n          position: relative;\n          background: %CLR_BACKGROUND;\n          flex-direction: column;\n\n          & img {\n            width: 100px;\n          }\n        }\n      }\n    ");
+    mod.onPreload = () => {
+        Style.add(`
+      div#wrapper > div#content > center {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: center;
+        & div.shoparea {
+          border: 1px dashed;
+          border-color: %CLR_BACKGROUND;
+          max-width: 100px;
+          display: flex;
+          padding: 0;
+          margin: 0;
+          position: relative;
+          background: %CLR_BACKGROUND;
+          flex-direction: column;
+
+          & img {
+            width: 100px;
+          }
+        }
+      }
+    `);
     };
-    mod.onActivate = function () { return __awaiter(_this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            $("div#wrapper > div#content > center > div.shoparea").find("br").remove();
-            return [2 /*return*/, true];
-        });
-    }); };
+    mod.onActivate = () => __awaiter(this, void 0, void 0, function* () {
+        $(`div#wrapper > div#content > center > div.shoparea`).find("br").remove();
+        return true;
+    });
 });
 Style.load({
     background: "#FFFFFF",
@@ -1131,57 +1551,55 @@ Style.inject();
 /**
  * Main Entrypoint
  */
-$(function () { return __awaiter(_this, void 0, void 0, function () {
-    var csrf, LOGIN_RE, userinfo_link, currency, user_1, prefix;
-    var _a, _c, _d, _e, _f, _g, _h, _j, _k, _l;
-    return __generator(this, function (_m) {
-        switch (_m.label) {
-            case 0:
-                Settings.load({
-                    itemsStacked: false,
-                    logLevel: Logger.LOG_WARNING,
-                });
-                csrf = null;
-                LOGIN_RE = /^\/login\/logout\/([a-zA-Z0-9]+)\/?$/;
-                $("div#sidebar > p.navlink > a").each(function (_, e) {
-                    var _a;
-                    if (csrf)
-                        return;
-                    var goto = getUri($(e).attr("href"));
-                    var found = ((_a = LOGIN_RE.exec(goto)) !== null && _a !== void 0 ? _a : [])[1];
-                    if (!found)
-                        return;
-                    csrf = found;
-                });
-                if (!(typeof csrf === "string")) return [3 /*break*/, 2];
-                userinfo_link = $("div#user-info > span > a");
-                currency = (_d = (_c = (_a = $("div#user-info-points")) === null || _a === void 0 ? void 0 : _a.text()) === null || _c === void 0 ? void 0 : _c.replace(/[\s]+/g, ";").split(";")) !== null && _d !== void 0 ? _d : [];
-                user_1 = new User(getUri(userinfo_link.attr("href"))
-                    .replace("/profile/u/", "")
-                    .replace("/", ""), userinfo_link.text());
-                user_1.csrf = csrf;
-                user_1.sugarstars = parseSepInt((_e = currency[2]) !== null && _e !== void 0 ? _e : "0");
-                user_1.daimonddust = parseSepInt((_f = currency[1]) !== null && _f !== void 0 ? _f : "0");
-                // Parse out the active goatling from the DOM, if present
-                user_1.active =
-                    (_j = (_h = (_g = /Welcome\s+[^\s]+\s+-\s+Your\s+active\s+Goatling\s+is\s+([^\s]+)/) === null || _g === void 0 ? void 0 : _g.exec($("div#user-info").text())) === null || _h === void 0 ? void 0 : _h[1]) !== null && _j !== void 0 ? _j : null;
-                prefix = null;
-                prefix = (_l = (_k = $("div#user-info > span > img")) === null || _k === void 0 ? void 0 : _k.attr("src")) !== null && _l !== void 0 ? _l : null;
-                if (prefix)
-                    user_1.prefix = getUri(prefix);
-                Mod.user = user_1;
-                return [4 /*yield*/, user_1.doUpdate()];
-            case 1:
-                _m.sent();
-                setInterval(function () {
-                    user_1.doUpdate();
-                }, User.UPDATE_WAIT_TIME * 1000);
-                _m.label = 2;
-            case 2:
-                Script.inject();
-                Mod.activateAll();
-                return [2 /*return*/];
-        }
+$(() => __awaiter(this, void 0, void 0, function* () {
+    var _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+    Settings.load({
+        itemsStacked: false,
+        logLevel: Logger.LOG_WARNING,
     });
-}); });
+    // Pull the page CSRF from the logout section of the sidebar
+    let csrf = null;
+    const LOGIN_RE = /^\/login\/logout\/([a-zA-Z0-9]+)\/?$/;
+    $("div#sidebar > p.navlink > a").each((_, e) => {
+        var _b;
+        if (csrf)
+            return;
+        let goto = getUri($(e).attr("href"));
+        let found = ((_b = LOGIN_RE.exec(goto)) !== null && _b !== void 0 ? _b : [])[1];
+        if (!found)
+            return;
+        csrf = found;
+    });
+    if (typeof csrf === "string") {
+        const userinfo_link = $("div#user-info > span > a");
+        const currency = (_d = (_c = (_b = $("div#user-info-points")) === null || _b === void 0 ? void 0 : _b.text()) === null || _c === void 0 ? void 0 : _c.replace(/[\s]+/g, ";").split(";")) !== null && _d !== void 0 ? _d : [];
+        /**
+         * At the time of this writing, Goatlings has a link to the users profile
+         * at XPath 'div#user-info > span > a', and that same element also conveniently
+         * stores the username. Parse the <a> tag for the profile UID, and the text
+         * for the username
+         */
+        const user = new User(getUri(userinfo_link.attr("href"))
+            .replace("/profile/u/", "")
+            .replace("/", ""), userinfo_link.text());
+        user.csrf = csrf;
+        user.sugarstars = parseSepInt((_e = currency[2]) !== null && _e !== void 0 ? _e : "0");
+        user.daimonddust = parseSepInt((_f = currency[1]) !== null && _f !== void 0 ? _f : "0");
+        // Parse out the active goatling from the DOM, if present
+        user.active =
+            (_j = (_h = (_g = /Welcome\s+[^\s]+\s+-\s+Your\s+active\s+Goatling\s+is\s+([^\s]+)/) === null || _g === void 0 ? void 0 : _g.exec($("div#user-info").text())) === null || _h === void 0 ? void 0 : _h[1]) !== null && _j !== void 0 ? _j : null;
+        // Parse out the active user prefix from the DOM, if present
+        let prefix = null;
+        prefix = (_l = (_k = $("div#user-info > span > img")) === null || _k === void 0 ? void 0 : _k.attr("src")) !== null && _l !== void 0 ? _l : null;
+        if (prefix)
+            user.prefix = getUri(prefix);
+        Mod.user = user;
+        yield user.doUpdate();
+        setInterval(() => {
+            user.doUpdate();
+        }, User.UPDATE_WAIT_TIME * 1000);
+    }
+    Script.inject();
+    Mod.activateAll();
+}));
 //# sourceMappingURL=goatlingtools.user.js.map
