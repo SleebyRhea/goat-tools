@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
+    "removeComments": false,
     "outDir": "build",
     "module": "esnext",
-    "target": "es5",
+    "target": "es6",
     "lib": [
       "es6",
       "dom",
